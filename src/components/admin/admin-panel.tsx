@@ -259,7 +259,8 @@ export function AdminPanel({
 }: {
   initialContent: SiteContent;
   onSaved?: (saved: SiteContent) => void;
-  onExit: () => void;
+  /** defaults to navigating back to the public site on "/" */
+  onExit?: () => void;
 }) {
   const [passcode, setPasscode] = useState("");
   const [authed, setAuthed] = useState(false);
@@ -274,13 +275,19 @@ export function AdminPanel({
   const [interestsText, setInterestsText] = useState(
     initialContent.about.interests.join("\n"),
   );
-  const [pillarsText, setPillarsText] = useState(
-    initialContent.quantum.pillars.join("\n"),
-  );
 
   const [status, setStatus] = useState<Status>("idle");
   const [saveError, setSaveError] = useState<string | null>(null);
   const statusTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const exitToSite = useCallback(() => {
+    if (onExit) {
+      onExit();
+    } else {
+      /* leaving the panel always lands on a fresh render of the public site */
+      window.location.assign("/");
+    }
+  }, [onExit]);
 
   useEffect(() => {
     return () => {
@@ -293,7 +300,6 @@ export function AdminPanel({
     setDraft(content);
     setAboutRowsText(content.about.rows.join("\n"));
     setInterestsText(content.about.interests.join("\n"));
-    setPillarsText(content.quantum.pillars.join("\n"));
   }, []);
 
   /* restore a saved session inside the same tab — verified against the
@@ -380,10 +386,6 @@ export function AdminPanel({
       rows: parseLines(aboutRowsText),
       interests: parseLines(interestsText),
     },
-    quantum: {
-      ...draft.quantum,
-      pillars: parseLines(pillarsText),
-    },
   });
 
   const save = async () => {
@@ -429,6 +431,18 @@ export function AdminPanel({
 
   const updateHero = (patch: Partial<SiteContent["hero"]>) =>
     setDraft((prev) => ({ ...prev, hero: { ...prev.hero, ...patch } }));
+
+  const updateSectionHeading = <K extends keyof SiteContent["sections"]>(
+    sectionKey: K,
+    patch: Partial<SiteContent["sections"][K]>,
+  ) =>
+    setDraft((prev) => ({
+      ...prev,
+      sections: {
+        ...prev.sections,
+        [sectionKey]: { ...prev.sections[sectionKey], ...patch },
+      },
+    }));
 
   const updateCard = (index: number, patch: Partial<FocusCard>) =>
     setDraft((prev) => ({
@@ -522,7 +536,7 @@ export function AdminPanel({
 
             <button
               type="button"
-              onClick={onExit}
+              onClick={exitToSite}
               className="mx-auto flex items-center gap-1.5 text-xs text-fog transition-colors hover:text-ink"
             >
               <ArrowRight size={13} aria-hidden="true" />
@@ -567,7 +581,7 @@ export function AdminPanel({
             <Button
               variant="outline"
               size="sm"
-              onClick={onExit}
+              onClick={exitToSite}
               className="h-9 gap-1.5 rounded-xl border-white/15 bg-white/[0.04] text-ink hover:bg-white/[0.08] hover:text-ink"
             >
               <ArrowRight size={14} aria-hidden="true" />
@@ -724,6 +738,52 @@ export function AdminPanel({
           {/* ------------------------------ about ------------------------------ */}
           <TabsContent value="about" className="mt-0 flex flex-col gap-6">
             <div className="glass rounded-3xl p-6">
+              <div className="flex flex-col gap-6">
+                <p className="-mb-1 text-xs font-semibold uppercase tracking-wide text-fog/70">
+                  تیترهای این بخش
+                </p>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <Field id="about-eyebrow" label="برچسب بالای تیتر">
+                    <Input
+                      id="about-eyebrow"
+                      value={draft.sections.about.eyebrow}
+                      onChange={(event) =>
+                        updateSectionHeading("about", {
+                          eyebrow: event.target.value,
+                        })
+                      }
+                      className="border-white/10 bg-white/[0.04] text-ink focus-visible:ring-aqua/40"
+                    />
+                  </Field>
+                  <Field id="about-title" label="تیتر بخش">
+                    <Input
+                      id="about-title"
+                      value={draft.sections.about.title}
+                      onChange={(event) =>
+                        updateSectionHeading("about", {
+                          title: event.target.value,
+                        })
+                      }
+                      className="border-white/10 bg-white/[0.04] text-ink focus-visible:ring-aqua/40"
+                    />
+                  </Field>
+                </div>
+                <Field id="about-interests-title" label="تیتر کارت علایق">
+                  <Input
+                    id="about-interests-title"
+                    value={draft.sections.about.interestsTitle}
+                    onChange={(event) =>
+                      updateSectionHeading("about", {
+                        interestsTitle: event.target.value,
+                      })
+                    }
+                    className="border-white/10 bg-white/[0.04] text-ink focus-visible:ring-aqua/40"
+                  />
+                </Field>
+              </div>
+            </div>
+
+            <div className="glass rounded-3xl p-6">
               <ListField
                 id="about-rows"
                 label="ردیف‌های پروفایل"
@@ -766,54 +826,30 @@ export function AdminPanel({
 
           {/* ----------------------------- quantum ----------------------------- */}
           <TabsContent value="quantum" className="mt-0 flex flex-col gap-6">
-            <div className="glass rounded-3xl p-6">
-              <div className="flex flex-col gap-6">
-                <Field id="quantum-p1" label="پاراگراف اول">
-                  <Textarea
-                    id="quantum-p1"
-                    rows={4}
-                    value={draft.quantum.paragraph1}
-                    onChange={(event) =>
-                      setDraft((prev) => ({
-                        ...prev,
-                        quantum: {
-                          ...prev.quantum,
-                          paragraph1: event.target.value,
-                        },
-                      }))
-                    }
-                    className="resize-y border-white/10 bg-white/[0.04] text-sm leading-7 text-ink focus-visible:ring-aqua/40"
-                  />
-                </Field>
-                <Field id="quantum-p2" label="پاراگراف دوم">
-                  <Textarea
-                    id="quantum-p2"
-                    rows={4}
-                    value={draft.quantum.paragraph2}
-                    onChange={(event) =>
-                      setDraft((prev) => ({
-                        ...prev,
-                        quantum: {
-                          ...prev.quantum,
-                          paragraph2: event.target.value,
-                        },
-                      }))
-                    }
-                    className="resize-y border-white/10 bg-white/[0.04] text-sm leading-7 text-ink focus-visible:ring-aqua/40"
-                  />
-                </Field>
-              </div>
-            </div>
+            <p className="rounded-2xl border border-iris/25 bg-iris/[0.07] px-4 py-3 text-xs leading-6 text-fog">
+              این بخش عمداً مرموز و مینیمال است: یک متن رمزآلود بالای لوگو، و بعد
+              فقط لوگو و نام Quantum — بدون توضیح اضافه.
+            </p>
 
             <div className="glass rounded-3xl p-6">
-              <ListField
-                id="quantum-pillars"
-                label="ستون‌های برند"
-                hint="هر مورد در یک خط؛ به‌صورت چیپ زیر معرفی Quantum نمایش داده می‌شوند."
-                value={pillarsText}
-                onChange={setPillarsText}
-                rows={5}
-              />
+              <Field
+                id="quantum-coming-soon"
+                label="متن مرموز بالای لوگو"
+                hint="با فونت monospace و حروف فاصله‌دار نمایش داده می‌شود. پیش‌فرض: ...coming soon"
+              >
+                <Input
+                  id="quantum-coming-soon"
+                  dir="ltr"
+                  value={draft.quantum.comingSoon}
+                  onChange={(event) =>
+                    setDraft((prev) => ({
+                      ...prev,
+                      quantum: { comingSoon: event.target.value },
+                    }))
+                  }
+                  className="border-white/10 bg-white/[0.04] font-mono text-sm text-ink focus-visible:ring-aqua/40"
+                />
+              </Field>
             </div>
           </TabsContent>
 
@@ -823,6 +859,35 @@ export function AdminPanel({
               عنوان، توضیح و تصویر هر کارت را می‌توانید ویرایش کنید و عکس جدید
               آپلود کنید. پس از هر تغییر، «ذخیره تغییرات» را بزنید.
             </p>
+
+            <div className="glass rounded-3xl p-6">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Field id="focus-eyebrow" label="برچسب بالای تیتر بخش">
+                  <Input
+                    id="focus-eyebrow"
+                    value={draft.sections.focus.eyebrow}
+                    onChange={(event) =>
+                      updateSectionHeading("focus", {
+                        eyebrow: event.target.value,
+                      })
+                    }
+                    className="border-white/10 bg-white/[0.04] text-ink focus-visible:ring-aqua/40"
+                  />
+                </Field>
+                <Field id="focus-title" label="تیتر بخش">
+                  <Input
+                    id="focus-title"
+                    value={draft.sections.focus.title}
+                    onChange={(event) =>
+                      updateSectionHeading("focus", {
+                        title: event.target.value,
+                      })
+                    }
+                    className="border-white/10 bg-white/[0.04] text-ink focus-visible:ring-aqua/40"
+                  />
+                </Field>
+              </div>
+            </div>
 
             {draft.focus.cards.map((card, index) => (
               <div key={index} className="glass rounded-3xl p-6">
@@ -883,6 +948,35 @@ export function AdminPanel({
           <TabsContent value="contact" className="mt-0 flex flex-col gap-6">
             <div className="glass rounded-3xl p-6">
               <div className="flex flex-col gap-6">
+                <p className="-mb-1 text-xs font-semibold uppercase tracking-wide text-fog/70">
+                  تیترهای این بخش
+                </p>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <Field id="contact-eyebrow" label="برچسب بالای تیتر">
+                    <Input
+                      id="contact-eyebrow"
+                      value={draft.sections.contact.eyebrow}
+                      onChange={(event) =>
+                        updateSectionHeading("contact", {
+                          eyebrow: event.target.value,
+                        })
+                      }
+                      className="border-white/10 bg-white/[0.04] text-ink focus-visible:ring-aqua/40"
+                    />
+                  </Field>
+                  <Field id="contact-title" label="تیتر بخش">
+                    <Input
+                      id="contact-title"
+                      value={draft.sections.contact.title}
+                      onChange={(event) =>
+                        updateSectionHeading("contact", {
+                          title: event.target.value,
+                        })
+                      }
+                      className="border-white/10 bg-white/[0.04] text-ink focus-visible:ring-aqua/40"
+                    />
+                  </Field>
+                </div>
                 <Field
                   id="contact-email"
                   label="ایمیل"

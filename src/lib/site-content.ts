@@ -27,10 +27,10 @@ export type SiteContent = {
     interests: string[];
     interestsNote: string;
   };
+  /** The brand section is intentionally mysterious: logo + name only. */
   quantum: {
-    paragraph1: string;
-    paragraph2: string;
-    pillars: string[];
+    /** Mysterious line above the Quantum logo — defaults to "...coming soon". */
+    comingSoon: string;
   };
   focus: {
     cards: FocusCard[];
@@ -38,6 +38,22 @@ export type SiteContent = {
   contact: {
     message: string;
     email: string;
+  };
+  /** Section headings — full editorial control over the page structure. */
+  sections: {
+    about: {
+      eyebrow: string;
+      title: string;
+      interestsTitle: string;
+    };
+    focus: {
+      eyebrow: string;
+      title: string;
+    };
+    contact: {
+      eyebrow: string;
+      title: string;
+    };
   };
 };
 
@@ -47,6 +63,7 @@ export const SITE_SECTIONS = [
   "quantum",
   "focus",
   "contact",
+  "sections",
 ] as const;
 
 export type SiteSection = (typeof SITE_SECTIONS)[number];
@@ -58,7 +75,7 @@ export const DEFAULT_CONTENT: SiteContent = {
     headline: "ایده‌های بزرگ را به **تجربه‌های ماندگار** تبدیل می‌کنم.",
     intro:
       "من پارمیدا زینتی هستم؛ طراح UI/UX، فارغ‌التحصیل مهندسی کامپیوتر و بنیان‌گذار کوانتوم. اینجا جایی است که طراحی، فناوری و نگاه انسانی به یک مسیر مشترک می‌رسند.",
-    portraitImage: "/images/portrait.png",
+    portraitImage: "/images/portrait.webp",
     portraitAlt: "پرتره پارمیدا زینتی، طراح UI/UX و بنیان‌گذار Quantum",
   },
   about: {
@@ -83,42 +100,32 @@ export const DEFAULT_CONTENT: SiteContent = {
       "این حوزه‌ها جهت‌گیری حرفه‌ای من را شکل می‌دهند؛ نقطه‌ای که طراحی، فناوری و نگاه انسانی در آن به هم می‌رسند.",
   },
   quantum: {
-    paragraph1:
-      "Quantum یک برند/شرکت در حال شکل‌گیری است که با هدف ایجاد ارتباط میان طراحی، استراتژی، آموزش، هوش مصنوعی و توسعه محصولات دیجیتال شکل گرفته است.",
-    paragraph2:
-      "تمرکز Quantum بر خلق راهکارهای معنادار، تجربه‌های دیجیتال مؤثر و توسعه دانش در حوزه فناوری و طراحی است.",
-    pillars: [
-      "طراحی",
-      "استراتژی",
-      "آموزش",
-      "هوش مصنوعی",
-      "توسعه محصولات دیجیتال",
-    ],
+    comingSoon: "...coming soon",
   },
   focus: {
     cards: [
       {
         title: "استراتژی",
-        image: "/images/focus-strategy.png",
+        image: "/images/focus-strategy.webp",
         alt: "جلسه استراتژی و همکاری تیمی دور یک میز شیشه‌ای در دفتر مدرن",
         concept:
           "تفکر ساختاریافته و تصمیم‌گیری برای رشد محصولات و کسب‌وکارها",
       },
       {
         title: "آموزش",
-        image: "/images/focus-education.png",
+        image: "/images/focus-education.webp",
         alt: "یادگیری، تدریس و توسعه مهارت با ارائه روی صفحه‌نمایش در فضای کار مدرن",
         concept: "انتقال دانش و ایجاد مسیرهای یادگیری مؤثر",
       },
       {
         title: "هوش مصنوعی",
-        image: "/images/focus-ai.png",
+        image: "/images/focus-ai.webp",
         alt: "تجسم انتزاعی هوش مصنوعی؛ شبکه عصبی درخشان و جریان داده",
         concept: "استفاده از فناوری برای خلق ارزش و نوآوری",
       },
       {
         title: "ساخت دیجیتال",
-        image: "/images/focus-digital.png",
+        image: "/images/focus-digital.webp",
         alt: "کدنویسی و توسعه محصولات دیجیتال روی لپ‌تاپ با چند نمایشگر",
         concept: "تبدیل ایده‌ها به محصولات واقعی",
       },
@@ -128,6 +135,21 @@ export const DEFAULT_CONTENT: SiteContent = {
     message:
       "اگر درباره طراحی، فناوری، هوش مصنوعی، آموزش یا توسعه محصولات دیجیتال علاقه‌مند به گفت‌وگو یا همکاری هستید، خوشحال می‌شوم در ارتباط باشیم.",
     email: "parmida.zinati8932@gmail.com",
+  },
+  sections: {
+    about: {
+      eyebrow: "پروفایل حرفه‌ای",
+      title: "درباره من",
+      interestsTitle: "حوزه‌های مورد علاقه",
+    },
+    focus: {
+      eyebrow: "مسیرهای من",
+      title: "حوزه‌های تمرکز",
+    },
+    contact: {
+      eyebrow: "در تماس باشیم",
+      title: "ارتباط با من",
+    },
   },
 };
 
@@ -164,6 +186,30 @@ const focusCards = (value: unknown): FocusCard[] => {
   });
 };
 
+const sectionHeadings = (value: unknown) => {
+  const source = (value ?? {}) as Record<string, unknown>;
+  const about = (source.about ?? {}) as Record<string, unknown>;
+  const focus = (source.focus ?? {}) as Record<string, unknown>;
+  const contact = (source.contact ?? {}) as Record<string, unknown>;
+  const fallback = DEFAULT_CONTENT.sections;
+
+  return {
+    about: {
+      eyebrow: str(about.eyebrow, fallback.about.eyebrow),
+      title: str(about.title, fallback.about.title),
+      interestsTitle: str(about.interestsTitle, fallback.about.interestsTitle),
+    },
+    focus: {
+      eyebrow: str(focus.eyebrow, fallback.focus.eyebrow),
+      title: str(focus.title, fallback.focus.title),
+    },
+    contact: {
+      eyebrow: str(contact.eyebrow, fallback.contact.eyebrow),
+      title: str(contact.title, fallback.contact.title),
+    },
+  };
+};
+
 /** Merge an arbitrary stored value over the defaults, section by section. */
 export function normalizeContent(raw: unknown): SiteContent {
   const source = (raw ?? {}) as Record<string, unknown>;
@@ -193,9 +239,10 @@ export function normalizeContent(raw: unknown): SiteContent {
       ),
     },
     quantum: {
-      paragraph1: str(quantum.paragraph1, DEFAULT_CONTENT.quantum.paragraph1),
-      paragraph2: str(quantum.paragraph2, DEFAULT_CONTENT.quantum.paragraph2),
-      pillars: strArr(quantum.pillars, DEFAULT_CONTENT.quantum.pillars),
+      comingSoon: str(
+        quantum.comingSoon,
+        DEFAULT_CONTENT.quantum.comingSoon,
+      ),
     },
     focus: {
       cards: focusCards(focus.cards),
@@ -204,6 +251,7 @@ export function normalizeContent(raw: unknown): SiteContent {
       message: str(contact.message, DEFAULT_CONTENT.contact.message),
       email: str(contact.email, DEFAULT_CONTENT.contact.email),
     },
+    sections: sectionHeadings(source.sections),
   };
 }
 

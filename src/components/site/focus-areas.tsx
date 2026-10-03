@@ -12,7 +12,13 @@ import type { SiteContent } from "@/lib/site-content";
 /* icons cycle across whatever cards the admin configures */
 const CARD_ICONS = [Compass, GraduationCap, BrainCircuit, Code2] as const;
 
-export function FocusAreas({ content }: { content: SiteContent["focus"] }) {
+export function FocusAreas({
+  content,
+  heading,
+}: {
+  content: SiteContent["focus"];
+  heading: SiteContent["sections"]["focus"];
+}) {
   return (
     <section
       id="focus"
@@ -20,11 +26,7 @@ export function FocusAreas({ content }: { content: SiteContent["focus"] }) {
       className="relative py-24 sm:py-28"
     >
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
-        <SectionHeading
-          id="focus-title"
-          eyebrow="مسیرهای من"
-          title="حوزه‌های تمرکز"
-        />
+        <SectionHeading id="focus-title" eyebrow={heading.eyebrow} title={heading.title} />
 
         <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
           {content.cards.map((area, i) => {

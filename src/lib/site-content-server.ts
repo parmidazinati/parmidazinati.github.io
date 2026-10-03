@@ -45,6 +45,7 @@ export async function saveSiteContent(content: SiteContent): Promise<void> {
     { key: "quantum", value: JSON.stringify(content.quantum) },
     { key: "focus", value: JSON.stringify(content.focus) },
     { key: "contact", value: JSON.stringify(content.contact) },
+    { key: "sections", value: JSON.stringify(content.sections) },
   ];
 
   await db.$transaction(

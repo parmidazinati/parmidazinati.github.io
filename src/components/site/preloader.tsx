@@ -3,14 +3,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { SkipForward } from "lucide-react";
-import { QuantumMark } from "./quantum-mark";
 
 /**
- * Cinematic boot screen: a fake terminal "compiles" the designer profile
- * while a progress bar fills up. Shown once per page load, before the
- * public site animates in. Fully skippable (button / Escape) and honors
- * prefers-reduced-motion by showing the finished state briefly instead
- * of the typing animation.
+ * Cinematic boot screen: a single terminal box that literally FILLS UP with
+ * code — lines type in one by one while a soft glow rises inside the box.
+ * When the box is full, the site appears. Skippable (button / Escape) and
+ * honors prefers-reduced-motion with a short static version.
  */
 
 type CodeLine = { text: string; className?: string };
@@ -75,7 +73,7 @@ export function Preloader({ onDone }: { onDone: () => void }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [finish]);
 
-  /* typing engine — reduced motion jumps straight to the finished state */
+  /* typing engine — reduced motion fills the box instantly */
   useEffect(() => {
     const id = setInterval(
       () => {
@@ -90,10 +88,10 @@ export function Preloader({ onDone }: { onDone: () => void }) {
     return () => clearInterval(id);
   }, [reduce, finish]);
 
-  /* brief beat after the code finishes, then hand over to the site */
+  /* brief beat once the box is full, then hand over to the site */
   useEffect(() => {
     if (typed < TOTAL_CHARS) return;
-    const timer = setTimeout(() => finish(), reduce ? 1400 : 620);
+    const timer = setTimeout(() => finish(), reduce ? 1400 : 650);
     return () => clearTimeout(timer);
   }, [typed, reduce, finish]);
 
@@ -114,6 +112,7 @@ export function Preloader({ onDone }: { onDone: () => void }) {
   );
 
   const percent = Math.min(100, Math.round((typed / TOTAL_CHARS) * 100));
+  const full = typed >= TOTAL_CHARS;
   const lastVisibleIndex = visible.reduce(
     (last, line, index) => (line ? index : last),
     -1,
@@ -126,7 +125,7 @@ export function Preloader({ onDone }: { onDone: () => void }) {
       initial={{ opacity: 1 }}
       exit={{ opacity: 0, y: -70, filter: "blur(10px)" }}
       transition={{ duration: 0.7, ease: [0.21, 0.47, 0.32, 0.98] }}
-      className="fixed inset-0 z-[90] flex flex-col items-center justify-center gap-7 overflow-hidden bg-[#050a14] px-4"
+      className="fixed inset-0 z-[90] flex flex-col items-center justify-center overflow-hidden bg-[#050a14] px-4"
     >
       {/* backdrop: dotted grid + brand glows */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">
@@ -135,38 +134,16 @@ export function Preloader({ onDone }: { onDone: () => void }) {
         <div className="absolute -bottom-24 end-[18%] h-80 w-80 rounded-full bg-lagoon/[0.09] blur-[120px]" />
       </div>
 
-      {/* brand */}
-      <motion.div
-        initial={{ opacity: 0, y: 14 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.55, ease: "easeOut" }}
-        className="relative z-10 flex flex-col items-center gap-3 text-center"
-      >
-        <span className="relative flex h-16 w-16 items-center justify-center">
-          <span
-            aria-hidden="true"
-            className="absolute inset-0 animate-ping rounded-full bg-aqua/20"
-          />
-          <span className="glass relative flex h-14 w-14 items-center justify-center rounded-2xl">
-            <QuantumMark size={30} />
-          </span>
-        </span>
-        <div>
-          <p className="text-base font-extrabold text-ink">پارمیدا زینتی</p>
-          <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.34em] text-fog">
-            Quantum
-          </p>
-        </div>
-      </motion.div>
-
-      {/* terminal */}
+      {/* ----------------------- the filling terminal box ----------------------- */}
       <motion.div
         initial={{ opacity: 0, y: 18, scale: 0.97 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.6, delay: 0.12, ease: "easeOut" }}
-        className="glass relative z-10 w-full max-w-xl overflow-hidden rounded-2xl shadow-[0_40px_90px_-30px_rgba(2,8,20,0.95)]"
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className={`glass relative z-10 w-full max-w-xl overflow-hidden rounded-2xl shadow-[0_40px_90px_-30px_rgba(2,8,20,0.95)] transition-shadow duration-500 ${
+          full ? "ring-1 ring-aqua/40" : ""
+        }`}
       >
-        {/* title bar */}
+        {/* title bar — dots, label and live fill percentage */}
         <div className="flex items-center gap-2 border-b border-white/[0.07] bg-white/[0.03] px-4 py-2.5">
           <span aria-hidden="true" className="h-2.5 w-2.5 rounded-full bg-red-400/70" />
           <span aria-hidden="true" className="h-2.5 w-2.5 rounded-full bg-amber-300/70" />
@@ -174,53 +151,48 @@ export function Preloader({ onDone }: { onDone: () => void }) {
           <span className="ms-3 font-mono text-[11px] text-fog" dir="ltr">
             quantum — zsh
           </span>
-        </div>
-
-        {/* code body — fixed min height so the layout never jumps */}
-        <div
-          dir="ltr"
-          className="min-h-[15rem] px-4 py-4 font-mono text-[12.5px] leading-6 sm:min-h-[15.5rem] sm:text-[13px]"
-          aria-hidden="true"
-        >
-          {visible.map(
-            (line, index) =>
-              line && (
-                <p
-                  key={index}
-                  className={`${line.className ?? "text-fog"} whitespace-pre-wrap`}
-                >
-                  {line.text}
-                  {index === lastVisibleIndex && typed < TOTAL_CHARS && (
-                    <span className="ms-0.5 inline-block h-3.5 w-2 translate-y-0.5 animate-pulse bg-aqua/80" />
-                  )}
-                </p>
-              ),
-          )}
-          {typed >= TOTAL_CHARS && (
-            <p className="text-lagoon">
-              <span className="inline-block h-3.5 w-2 translate-y-0.5 animate-pulse bg-lagoon/80" />
-            </p>
-          )}
-        </div>
-
-        {/* progress */}
-        <div className="flex items-center gap-3 border-t border-white/[0.07] bg-white/[0.03] px-4 py-3">
-          <div
-            role="progressbar"
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-valuenow={percent}
-            aria-label="پیشرفت بارگذاری"
-            className="h-1 flex-1 overflow-hidden rounded-full bg-white/10"
+          <span
+            className="ms-auto font-mono text-[11px] tabular-nums text-aqua"
+            dir="ltr"
           >
-            <div
-              className="h-full rounded-full bg-linear-to-r from-aqua to-lagoon transition-[width] duration-100 ease-linear"
-              style={{ width: `${percent}%` }}
-            />
-          </div>
-          <span className="font-mono text-[11px] tabular-nums text-fog" dir="ltr">
             {percent}%
           </span>
+        </div>
+
+        {/* code area — fixed height so the box visibly FILLS from empty */}
+        <div
+          dir="ltr"
+          className="relative h-[15.5rem] px-4 py-4 font-mono text-[12.5px] leading-6 sm:text-[13px]"
+          aria-hidden="true"
+        >
+          {/* rising glow = how full the box is */}
+          <div
+            className="absolute inset-x-0 bottom-0 bg-linear-to-t from-aqua/[0.12] via-aqua/[0.05] to-transparent shadow-[0_-1px_0_0_rgba(34,211,238,0.35)] transition-[height] duration-100 ease-linear"
+            style={{ height: `${percent}%` }}
+          />
+
+          {/* the code being written */}
+          <div className="relative">
+            {visible.map(
+              (line, index) =>
+                line && (
+                  <p
+                    key={index}
+                    className={`whitespace-pre-wrap ${line.className ?? "text-fog"}`}
+                  >
+                    {line.text}
+                    {index === lastVisibleIndex && !full && (
+                      <span className="ms-0.5 inline-block h-3.5 w-2 translate-y-0.5 animate-pulse bg-aqua/80" />
+                    )}
+                  </p>
+                ),
+            )}
+            {full && (
+              <p className="text-lagoon">
+                <span className="inline-block h-3.5 w-2 translate-y-0.5 animate-pulse bg-lagoon/80" />
+              </p>
+            )}
+          </div>
         </div>
       </motion.div>
 
@@ -228,7 +200,7 @@ export function Preloader({ onDone }: { onDone: () => void }) {
       <button
         type="button"
         onClick={finish}
-        className="relative z-10 flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs text-fog/80 transition-colors hover:text-ink focus-visible:outline focus-visible:outline-1 focus-visible:outline-aqua/60"
+        className="relative z-10 mt-7 flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs text-fog/80 transition-colors hover:text-ink focus-visible:outline focus-visible:outline-1 focus-visible:outline-aqua/60"
       >
         <SkipForward size={13} aria-hidden="true" />
         رد شدن

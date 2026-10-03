@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /biayekamnazdikeman
 
 Sitemap: https://parmidazinati.ir/sitemap.xml

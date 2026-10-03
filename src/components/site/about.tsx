@@ -12,7 +12,13 @@ import type { SiteContent } from "@/lib/site-content";
 /* icons cycle across whatever rows the admin configures */
 const ROW_ICONS = [User, Palette, GraduationCap, MapPin, Sparkles] as const;
 
-export function About({ content }: { content: SiteContent["about"] }) {
+export function About({
+  content,
+  heading,
+}: {
+  content: SiteContent["about"];
+  heading: SiteContent["sections"]["about"];
+}) {
   return (
     <section
       id="about"
@@ -20,11 +26,7 @@ export function About({ content }: { content: SiteContent["about"] }) {
       className="relative py-24 sm:py-28"
     >
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
-        <SectionHeading
-          id="about-title"
-          eyebrow="پروفایل حرفه‌ای"
-          title="درباره من"
-        />
+        <SectionHeading id="about-title" eyebrow={heading.eyebrow} title={heading.title} />
 
         <div className="grid items-start gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:gap-8">
           {/* -------------------------- profile glass card -------------------------- */}
@@ -63,7 +65,7 @@ export function About({ content }: { content: SiteContent["about"] }) {
                 className="absolute -bottom-24 -start-24 h-56 w-56 rounded-full bg-lagoon/[0.07] blur-3xl"
               />
               <h3 className="relative mb-5 text-lg font-bold text-ink">
-                حوزه‌های مورد علاقه
+                {heading.interestsTitle}
               </h3>
               <ul className="relative flex flex-wrap gap-2.5">
                 {content.interests.map((interest) => (

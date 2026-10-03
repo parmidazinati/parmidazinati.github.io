@@ -1,23 +1,11 @@
-import {
-  BrainCircuit,
-  Compass,
-  GraduationCap,
-  Palette,
-  Rocket,
-} from "lucide-react";
 import { QuantumMark } from "./quantum-mark";
 import { Reveal } from "./reveal";
 import type { SiteContent } from "@/lib/site-content";
 
-/* icons cycle across whatever pillars the admin configures */
-const PILLAR_ICONS = [
-  Palette,
-  Compass,
-  GraduationCap,
-  BrainCircuit,
-  Rocket,
-] as const;
-
+/**
+ * The Quantum brand section is intentionally minimal and mysterious:
+ * a secretive "...coming soon" line floating above the logo and name.
+ */
 export function QuantumSection({
   content,
 }: {
@@ -27,19 +15,29 @@ export function QuantumSection({
     <section
       id="quantum"
       aria-labelledby="quantum-title"
-      className="relative overflow-hidden py-24 sm:py-28"
+      className="relative overflow-hidden py-28 sm:py-36"
     >
       {/* subtle brand gradient backdrop */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">
         <div className="absolute start-1/2 top-0 h-px w-[min(48rem,80%)] -translate-x-1/2 bg-linear-to-l from-transparent via-white/[0.08] to-transparent" />
-        <div className="absolute start-1/2 top-24 h-72 w-[36rem] max-w-[90vw] -translate-x-1/2 rounded-full bg-iris/[0.05] blur-[120px]" />
+        <div className="absolute start-1/2 top-24 h-72 w-[36rem] max-w-[90vw] -translate-x-1/2 rounded-full bg-iris/[0.06] blur-[120px]" />
         <div className="absolute bottom-0 start-1/2 h-56 w-[30rem] max-w-[85vw] -translate-x-1/2 rounded-full bg-aqua/[0.05] blur-[110px]" />
       </div>
 
       <div className="relative mx-auto flex w-full max-w-4xl flex-col items-center px-4 text-center sm:px-6">
-        {/* ------------------------------ brand emblem ------------------------------ */}
+        {/* --------------------------- mysterious teaser --------------------------- */}
         <Reveal>
-          <div className="relative mb-8 flex items-center justify-center">
+          <p
+            dir="ltr"
+            className="animate-pulse-soft font-mono text-sm font-medium tracking-[0.42em] text-fog/90 sm:text-base"
+          >
+            {content.comingSoon}
+          </p>
+        </Reveal>
+
+        {/* ------------------------------ brand emblem ------------------------------ */}
+        <Reveal delay={0.12}>
+          <div className="relative mt-12 flex items-center justify-center">
             {/* orbit rings around the mark */}
             <div
               aria-hidden="true"
@@ -56,50 +54,13 @@ export function QuantumSection({
           </div>
         </Reveal>
 
-        <Reveal delay={0.08}>
-          <span className="glass-chip mb-6 text-lagoon">
-            <span className="h-1.5 w-1.5 rounded-full bg-lagoon shadow-[0_0_8px_2px_rgba(45,212,191,0.6)]" />
-            برند در حال شکل‌گیری
-          </span>
-        </Reveal>
-
-        <Reveal delay={0.12}>
+        <Reveal delay={0.2}>
           <h2
             id="quantum-title"
-            className="font-mono text-5xl font-bold tracking-tight sm:text-6xl"
+            className="mt-9 font-mono text-5xl font-bold tracking-tight sm:text-6xl"
           >
             <span className="text-gradient">Quantum</span>
           </h2>
-          <p className="mt-2 text-base font-semibold text-fog">کوانتوم</p>
-        </Reveal>
-
-        <Reveal delay={0.16}>
-          <div className="mt-8 flex max-w-2xl flex-col gap-5 text-base leading-8 text-fog sm:text-lg sm:leading-9">
-            <p>{content.paragraph1}</p>
-            <p>{content.paragraph2}</p>
-          </div>
-        </Reveal>
-
-        {/* -------------------------------- pillars -------------------------------- */}
-        <Reveal delay={0.2} className="mt-12 w-full">
-          <ul className="mx-auto flex max-w-3xl flex-wrap items-center justify-center gap-3">
-            {content.pillars.map((pillar, index) => {
-              const Icon = PILLAR_ICONS[index % PILLAR_ICONS.length];
-              return (
-                <li
-                  key={pillar}
-                  className="glass group flex items-center gap-2.5 rounded-2xl px-4 py-3 text-sm font-semibold text-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-aqua/30 hover:shadow-[0_14px_40px_-14px_rgba(34,211,238,0.4)]"
-                >
-                  <Icon
-                    size={17}
-                    aria-hidden="true"
-                    className="text-aqua transition-transform duration-300 group-hover:scale-110"
-                  />
-                  {pillar}
-                </li>
-              );
-            })}
-          </ul>
         </Reveal>
       </div>
     </section>

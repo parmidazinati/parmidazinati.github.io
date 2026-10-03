@@ -5,7 +5,13 @@ import { Check, Copy, Mail, Send } from "lucide-react";
 import { Reveal } from "./reveal";
 import type { SiteContent } from "@/lib/site-content";
 
-export function Contact({ content }: { content: SiteContent["contact"] }) {
+export function Contact({
+  content,
+  heading,
+}: {
+  content: SiteContent["contact"];
+  heading: SiteContent["sections"]["contact"];
+}) {
   const EMAIL = content.email;
   const [copied, setCopied] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -62,14 +68,14 @@ export function Contact({ content }: { content: SiteContent["contact"] }) {
             <div className="relative flex flex-col items-center">
               <span className="glass-chip mb-6 text-aqua">
                 <span className="h-1.5 w-1.5 rounded-full bg-aqua shadow-[0_0_8px_2px_rgba(34,211,238,0.6)]" />
-                در تماس باشیم
+                {heading.eyebrow}
               </span>
 
               <h2
                 id="contact-title"
                 className="text-3xl font-extrabold tracking-tight text-ink sm:text-4xl"
               >
-                ارتباط با من
+                {heading.title}
               </h2>
 
               <p className="mt-5 max-w-xl text-base leading-8 text-fog sm:text-lg sm:leading-9">

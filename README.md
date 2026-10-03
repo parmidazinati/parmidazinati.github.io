@@ -52,20 +52,23 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## 🔐 Admin Panel (مدیریت محتوا)
 
-Ways to open the content manager:
+The admin panel is **completely hidden from the public site** — no buttons, no links. It lives on its own private route:
 
-1. **Right-edge tab** — the discreet «مدیریت سایت» vertical tab pinned to the right side of the viewport
-2. **Direct link** — `http://localhost:3000/?admin=1`
+```
+/biayekamnazdikeman
+```
 
-The passcode is read from the `ADMIN_PASSCODE` variable in `.env` (server-side only; change it before deploying).
+- Not linked anywhere on the site and marked `noindex` + `Disallow` in robots.txt.
+- A passcode gate protects it — the passcode is read from the `ADMIN_PASSCODE` variable in `.env` (server-side only; change it before deploying).
+- «بازگشت به سایت» in the panel always lands on a fresh render of `/`.
 
-What you can edit from the panel:
+What you can edit from the panel (full editorial control):
 
 - **معرفی (Hero)** — chip label, headline (use `**text**` for the gradient highlight), intro, portrait image + alt
-- **درباره من** — profile rows, interest chips, closing note
-- **Quantum** — both paragraphs and brand pillars
-- **حوزه‌های تمرکز** — title / description / image / alt of each of the 4 cards
-- **تماس** — contact email and invitation text
+- **درباره من** — section eyebrow/title, interest-card title, profile rows, interest chips, closing note
+- **Quantum** — only the mysterious line above the logo (default `...coming soon`); the brand block itself stays minimal: logo + name
+- **حوزه‌های تمرکز** — section eyebrow/title plus title / description / image / alt of each of the 4 cards
+- **تماس** — section eyebrow/title, contact email and invitation text
 
 Images can be **uploaded directly** from the panel (drag & drop or file picker → PNG / JPG / WebP up to 5 MB) — files land in `public/uploads/` and the path fills in automatically. Typing a path from `public/` manually still works too.
 
@@ -73,7 +76,7 @@ Saves go to SQLite (Prisma `SiteSetting` table) and appear on the public site im
 
 ## ✨ Intro Preloader
 
-On every page load the public site greets visitors with a terminal-style boot screen: the Quantum profile "compiles" line by line with a progress bar. It can be skipped («رد شدن» or `Esc`), and it is replaced by a short static version when `prefers-reduced-motion` is set. It never shows in admin mode.
+On every page load the public site greets visitors with a terminal-style boot screen: a single loading box that literally fills up with code (with a live percentage in its title bar and a soft glow rising inside). When the box is full, the site appears. It can be skipped («رد شدن» or `Esc`), and it is replaced by a short static version when `prefers-reduced-motion` is set.
 
 ## 📁 Structure
 
@@ -81,13 +84,14 @@ On every page load the public site greets visitors with a terminal-style boot sc
 src/
 ├── app/
 │   ├── api/admin/{login,content,upload}/route.ts  # admin auth + content + image upload API
+│   ├── biayekamnazdikeman/page.tsx          # private admin route (noindex)
 │   ├── layout.tsx                           # RTL, fonts, SEO, JSON-LD
 │   └── page.tsx                             # dynamic server render
 ├── components/
 │   ├── admin/admin-panel.tsx                # passcode gate + 5-tab editor + upload widget
 │   ├── site/                                # header, hero, about, quantum,
 │   │                                        # focus-areas, contact, footer, preloader…
-│   └── site/site-shell.tsx                  # public site ⇄ admin switcher + boot state
+│   └── site/site-shell.tsx                  # public site + boot state
 └── lib/
     ├── site-content.ts                      # types + Persian defaults
     ├── site-content-server.ts               # Prisma read/write
@@ -97,8 +101,8 @@ src/
 ## 📦 Deployment Notes
 
 - Update the placeholder domain `https://parmidazinati.ir` in `src/app/layout.tsx`, `public/robots.txt` and `public/sitemap.xml` once the real domain is purchased.
-- Replace the placeholder portrait with a real photo at `public/images/portrait.png` (or change the path from the admin panel).
-- Set a strong `ADMIN_PASSCODE` in production.
+- Replace the placeholder portrait with a real photo at `public/images/portrait.webp` (or upload it from the admin panel).
+- Set a strong `ADMIN_PASSCODE` in production — and if you ever want a different secret URL, rename the `src/app/biayekamnazdikeman` folder (and the `Disallow` rule in robots.txt).
 
 ---
 
