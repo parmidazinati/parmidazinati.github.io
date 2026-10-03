@@ -1,1 +1,0 @@
-# parmidazinati.github.io
