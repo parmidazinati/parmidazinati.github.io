@@ -7,16 +7,22 @@ import {
 } from "lucide-react";
 import { QuantumMark } from "./quantum-mark";
 import { Reveal } from "./reveal";
+import type { SiteContent } from "@/lib/site-content";
 
-const PILLARS = [
-  { icon: Palette, label: "طراحی" },
-  { icon: Compass, label: "استراتژی" },
-  { icon: GraduationCap, label: "آموزش" },
-  { icon: BrainCircuit, label: "هوش مصنوعی" },
-  { icon: Rocket, label: "توسعه محصولات دیجیتال" },
+/* icons cycle across whatever pillars the admin configures */
+const PILLAR_ICONS = [
+  Palette,
+  Compass,
+  GraduationCap,
+  BrainCircuit,
+  Rocket,
 ] as const;
 
-export function QuantumSection() {
+export function QuantumSection({
+  content,
+}: {
+  content: SiteContent["quantum"];
+}) {
   return (
     <section
       id="quantum"
@@ -69,26 +75,19 @@ export function QuantumSection() {
 
         <Reveal delay={0.16}>
           <div className="mt-8 flex max-w-2xl flex-col gap-5 text-base leading-8 text-fog sm:text-lg sm:leading-9">
-            <p>
-              Quantum یک برند/شرکت در حال شکل‌گیری است که با هدف ایجاد ارتباط
-              میان طراحی، استراتژی، آموزش، هوش مصنوعی و توسعه محصولات دیجیتال
-              شکل گرفته است.
-            </p>
-            <p>
-              تمرکز Quantum بر خلق راهکارهای معنادار، تجربه‌های دیجیتال مؤثر و
-              توسعه دانش در حوزه فناوری و طراحی است.
-            </p>
+            <p>{content.paragraph1}</p>
+            <p>{content.paragraph2}</p>
           </div>
         </Reveal>
 
         {/* -------------------------------- pillars -------------------------------- */}
         <Reveal delay={0.2} className="mt-12 w-full">
           <ul className="mx-auto flex max-w-3xl flex-wrap items-center justify-center gap-3">
-            {PILLARS.map((pillar) => {
-              const Icon = pillar.icon;
+            {content.pillars.map((pillar, index) => {
+              const Icon = PILLAR_ICONS[index % PILLAR_ICONS.length];
               return (
                 <li
-                  key={pillar.label}
+                  key={pillar}
                   className="glass group flex items-center gap-2.5 rounded-2xl px-4 py-3 text-sm font-semibold text-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-aqua/30 hover:shadow-[0_14px_40px_-14px_rgba(34,211,238,0.4)]"
                 >
                   <Icon
@@ -96,7 +95,7 @@ export function QuantumSection() {
                     aria-hidden="true"
                     className="text-aqua transition-transform duration-300 group-hover:scale-110"
                   />
-                  {pillar.label}
+                  {pillar}
                 </li>
               );
             })}

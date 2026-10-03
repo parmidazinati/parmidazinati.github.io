@@ -3,10 +3,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Check, Copy, Mail, Send } from "lucide-react";
 import { Reveal } from "./reveal";
+import type { SiteContent } from "@/lib/site-content";
 
-const EMAIL = "parmida.zinati8932@gmail.com";
-
-export function Contact() {
+export function Contact({ content }: { content: SiteContent["contact"] }) {
+  const EMAIL = content.email;
   const [copied, setCopied] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -38,7 +38,7 @@ export function Contact() {
     } catch {
       /* clipboard unavailable — the mailto link remains usable */
     }
-  }, []);
+  }, [EMAIL]);
 
   return (
     <section
@@ -73,9 +73,7 @@ export function Contact() {
               </h2>
 
               <p className="mt-5 max-w-xl text-base leading-8 text-fog sm:text-lg sm:leading-9">
-                اگر درباره طراحی، فناوری، هوش مصنوعی، آموزش یا توسعه محصولات
-                دیجیتال علاقه‌مند به گفت‌وگو یا همکاری هستید، خوشحال می‌شوم در
-                ارتباط باشیم.
+                {content.message}
               </p>
 
               {/* email row */}

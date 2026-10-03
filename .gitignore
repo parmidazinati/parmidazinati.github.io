@@ -52,3 +52,18 @@ prompt
 server.log
 # Skills directory
 /skills/
+# environment & local database (secrets + runtime data)
+.env
+.env.*
+!/.env.example
+/db
+
+# sandbox / scaffold artifacts (not part of the website)
+.zscripts
+/tests
+/examples
+/mini-services
+/download
+Caddyfile
+worklog.md
+agent-ctx

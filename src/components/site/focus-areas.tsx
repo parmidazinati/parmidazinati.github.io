@@ -7,40 +7,12 @@ import {
 } from "lucide-react";
 import { Reveal } from "./reveal";
 import { SectionHeading } from "./section-heading";
+import type { SiteContent } from "@/lib/site-content";
 
-const FOCUS_AREAS = [
-  {
-    title: "استراتژی",
-    image: "/images/focus-strategy.webp",
-    alt: "جلسه استراتژی و همکاری تیمی دور یک میز شیشه‌ای در دفتر مدرن",
-    concept:
-      "تفکر ساختاریافته و تصمیم‌گیری برای رشد محصولات و کسب‌وکارها",
-    icon: Compass,
-  },
-  {
-    title: "آموزش",
-    image: "/images/focus-education.webp",
-    alt: "یادگیری، تدریس و توسعه مهارت با ارائه روی صفحه‌نمایش در فضای کار مدرن",
-    concept: "انتقال دانش و ایجاد مسیرهای یادگیری مؤثر",
-    icon: GraduationCap,
-  },
-  {
-    title: "هوش مصنوعی",
-    image: "/images/focus-ai.webp",
-    alt: "تجسم انتزاعی هوش مصنوعی؛ شبکه عصبی درخشان و جریان داده",
-    concept: "استفاده از فناوری برای خلق ارزش و نوآوری",
-    icon: BrainCircuit,
-  },
-  {
-    title: "ساخت دیجیتال",
-    image: "/images/focus-digital.webp",
-    alt: "کدنویسی و توسعه محصولات دیجیتال روی لپ‌تاپ با چند نمایشگر",
-    concept: "تبدیل ایده‌ها به محصولات واقعی",
-    icon: Code2,
-  },
-] as const;
+/* icons cycle across whatever cards the admin configures */
+const CARD_ICONS = [Compass, GraduationCap, BrainCircuit, Code2] as const;
 
-export function FocusAreas() {
+export function FocusAreas({ content }: { content: SiteContent["focus"] }) {
   return (
     <section
       id="focus"
@@ -55,8 +27,8 @@ export function FocusAreas() {
         />
 
         <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
-          {FOCUS_AREAS.map((area, i) => {
-            const Icon = area.icon;
+          {content.cards.map((area, i) => {
+            const Icon = CARD_ICONS[i % CARD_ICONS.length];
             return (
               <li key={area.title}>
                 <Reveal delay={i * 0.08} className="h-full">

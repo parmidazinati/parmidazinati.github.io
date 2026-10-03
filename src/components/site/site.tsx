@@ -6,8 +6,15 @@ import { QuantumSection } from "./quantum-section";
 import { FocusAreas } from "./focus-areas";
 import { Contact } from "./contact";
 import { Footer } from "./footer";
+import type { SiteContent } from "@/lib/site-content";
 
-export function Site() {
+export function Site({
+  content,
+  onOpenAdmin,
+}: {
+  content: SiteContent;
+  onOpenAdmin?: () => void;
+}) {
   return (
     <div className="relative flex min-h-svh flex-col overflow-x-clip">
       {/* skip link for keyboard & screen-reader users */}
@@ -22,14 +29,14 @@ export function Site() {
       <Header />
 
       <main id="main" className="flex-1">
-        <Hero />
-        <About />
-        <QuantumSection />
-        <FocusAreas />
-        <Contact />
+        <Hero content={content.hero} />
+        <About content={content.about} />
+        <QuantumSection content={content.quantum} />
+        <FocusAreas content={content.focus} />
+        <Contact content={content.contact} />
       </main>
 
-      <Footer />
+      <Footer onManage={onOpenAdmin} />
     </div>
   );
 }

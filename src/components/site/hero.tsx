@@ -4,6 +4,7 @@ import Image from "next/image";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
 import { ArrowDownLeft, ChevronDown, Sparkles } from "lucide-react";
 import { QuantumMark } from "./quantum-mark";
+import { splitHeadline, type SiteContent } from "@/lib/site-content";
 
 const EASE: [number, number, number, number] = [0.21, 0.47, 0.32, 0.98];
 
@@ -22,8 +23,13 @@ const item: Variants = {
   },
 };
 
-export function Hero() {
+export function Hero({ content }: { content: SiteContent["hero"] }) {
   const reduce = useReducedMotion();
+
+  /* decorative floating chips derive from the hero chip (splits on "·") */
+  const chipParts = content.chip.split("·").map((part) => part.trim());
+  const chipTop = chipParts[0] || content.chip;
+  const chipBottom = chipParts[1] || "Quantum";
 
   return (
     <section
@@ -53,25 +59,29 @@ export function Hero() {
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-aqua opacity-50" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-aqua" />
             </span>
-            طراح UI/UX · بنیان‌گذار Quantum
+            {content.chip}
           </motion.span>
 
           <motion.h1
             variants={reduce ? undefined : item}
             className="max-w-xl text-4xl font-black leading-[1.3] tracking-tight text-ink sm:text-5xl sm:leading-[1.28] xl:text-[3.4rem] xl:leading-[1.25]"
           >
-            ایده‌های بزرگ را به{" "}
-            <span className="text-gradient">تجربه‌های ماندگار</span> تبدیل
-            می‌کنم.
+            {splitHeadline(content.headline).map((segment, index) =>
+              segment.highlighted ? (
+                <span key={index} className="text-gradient">
+                  {segment.text}
+                </span>
+              ) : (
+                <span key={index}>{segment.text}</span>
+              ),
+            )}
           </motion.h1>
 
           <motion.p
             variants={reduce ? undefined : item}
             className="max-w-xl text-base leading-8 text-fog sm:text-lg sm:leading-9"
           >
-            من پارمیدا زینتی هستم؛ طراح UI/UX، فارغ‌التحصیل مهندسی کامپیوتر و
-            بنیان‌گذار کوانتوم. اینجا جایی است که طراحی، فناوری و نگاه انسانی
-            به یک مسیر مشترک می‌رسند.
+            {content.intro}
           </motion.p>
 
           <motion.div
@@ -132,8 +142,8 @@ export function Hero() {
           <div className="glass-frame relative overflow-hidden rounded-[2rem] p-[1.5px] shadow-[0_40px_90px_-30px_rgba(2,8,20,0.9)]">
             <div className="relative aspect-[4/5] overflow-hidden rounded-[calc(2rem-1.5px)] bg-night-soft">
               <Image
-                src="/images/portrait.webp"
-                alt="پرتره پارمیدا زینتی، طراح UI/UX و بنیان‌گذار Quantum"
+                src={content.portraitImage}
+                alt={content.portraitAlt}
                 width={768}
                 height={1344}
                 priority
@@ -159,13 +169,13 @@ export function Hero() {
           <div className="glass absolute -top-5 end-[-6%] hidden animate-float items-center gap-2 rounded-2xl px-4 py-2.5 shadow-[0_18px_50px_-16px_rgba(2,8,20,0.85)] sm:flex">
             <Sparkles size={16} className="text-aqua" aria-hidden="true" />
             <span className="text-[13px] font-semibold text-ink">
-              طراح UI/UX
+              {chipTop}
             </span>
           </div>
           <div className="glass absolute -bottom-5 start-[-8%] hidden animate-float-late items-center gap-2.5 rounded-2xl px-4 py-2.5 shadow-[0_18px_50px_-16px_rgba(2,8,20,0.85)] sm:flex">
             <QuantumMark size={20} />
             <span className="text-[13px] font-semibold text-ink">
-              بنیان‌گذار Quantum
+              {chipBottom}
             </span>
           </div>
         </motion.div>

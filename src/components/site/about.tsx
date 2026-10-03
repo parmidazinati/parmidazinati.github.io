@@ -7,30 +7,12 @@ import {
 } from "lucide-react";
 import { Reveal } from "./reveal";
 import { SectionHeading } from "./section-heading";
+import type { SiteContent } from "@/lib/site-content";
 
-const PROFILE_ROWS = [
-  { icon: User, label: "پارمیدا زینتی" },
-  { icon: Palette, label: "طراح UI/UX" },
-  { icon: GraduationCap, label: "فارغ‌التحصیل مهندسی کامپیوتر" },
-  { icon: MapPin, label: "ساکن قائمشهر، ایران" },
-  {
-    icon: Sparkles,
-    label: "علاقه‌مند به طراحی، فناوری، یادگیری و ساختن آینده",
-  },
-] as const;
+/* icons cycle across whatever rows the admin configures */
+const ROW_ICONS = [User, Palette, GraduationCap, MapPin, Sparkles] as const;
 
-const INTERESTS = [
-  "طراحی محصول دیجیتال",
-  "تجربه کاربری",
-  "فناوری",
-  "هوش مصنوعی",
-  "آموزش",
-  "ساخت محصولات دیجیتال",
-  "یادگیری مستمر",
-  "آینده‌پژوهی و نوآوری",
-] as const;
-
-export function About() {
+export function About({ content }: { content: SiteContent["about"] }) {
   return (
     <section
       id="about"
@@ -54,16 +36,16 @@ export function About() {
                 className="absolute -top-24 -end-24 h-56 w-56 rounded-full bg-aqua/[0.08] blur-3xl"
               />
               <ul className="relative flex flex-col gap-1">
-                {PROFILE_ROWS.map((row) => {
-                  const Icon = row.icon;
+                {content.rows.map((row, index) => {
+                  const Icon = ROW_ICONS[index % ROW_ICONS.length];
                   return (
-                    <li key={row.label}>
+                    <li key={row}>
                       <div className="group flex items-center gap-4 rounded-2xl px-3 py-3.5 transition-colors duration-300 hover:bg-white/[0.04]">
                         <span className="glass flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-aqua transition-shadow duration-300 group-hover:shadow-[0_0_20px_-2px_rgba(34,211,238,0.35)]">
                           <Icon size={19} aria-hidden="true" />
                         </span>
                         <span className="text-[15px] font-medium leading-7 text-ink sm:text-base">
-                          {row.label}
+                          {row}
                         </span>
                       </div>
                     </li>
@@ -84,7 +66,7 @@ export function About() {
                 حوزه‌های مورد علاقه
               </h3>
               <ul className="relative flex flex-wrap gap-2.5">
-                {INTERESTS.map((interest) => (
+                {content.interests.map((interest) => (
                   <li
                     key={interest}
                     className="glass-chip text-[13px] text-fog transition-colors duration-300 hover:border-aqua/30 hover:text-ink"
@@ -98,8 +80,7 @@ export function About() {
                 ))}
               </ul>
               <p className="relative mt-6 text-sm leading-7 text-fog">
-                این حوزه‌ها جهت‌گیری حرفه‌ای من را شکل می‌دهند؛ نقطه‌ای که
-                طراحی، فناوری و نگاه انسانی در آن به هم می‌رسند.
+                {content.interestsNote}
               </p>
             </div>
           </Reveal>
