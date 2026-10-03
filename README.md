@@ -54,9 +54,8 @@ Open [http://localhost:3000](http://localhost:3000).
 
 Ways to open the content manager:
 
-1. **Floating button** — the «پنل مدیریت» glass button, pinned to the corner of every page
-2. **Footer button** — «پنل مدیریت سایت» at the bottom of the page
-3. **Direct link** — `http://localhost:3000/?admin=1`
+1. **Right-edge tab** — the discreet «مدیریت سایت» vertical tab pinned to the right side of the viewport
+2. **Direct link** — `http://localhost:3000/?admin=1`
 
 The passcode is read from the `ADMIN_PASSCODE` variable in `.env` (server-side only; change it before deploying).
 
@@ -68,21 +67,27 @@ What you can edit from the panel:
 - **حوزه‌های تمرکز** — title / description / image / alt of each of the 4 cards
 - **تماس** — contact email and invitation text
 
+Images can be **uploaded directly** from the panel (drag & drop or file picker → PNG / JPG / WebP up to 5 MB) — files land in `public/uploads/` and the path fills in automatically. Typing a path from `public/` manually still works too.
+
 Saves go to SQLite (Prisma `SiteSetting` table) and appear on the public site immediately. «بازگردانی متن‌های پیش‌فرض» restores the original copy in the form.
+
+## ✨ Intro Preloader
+
+On every page load the public site greets visitors with a terminal-style boot screen: the Quantum profile "compiles" line by line with a progress bar. It can be skipped («رد شدن» or `Esc`), and it is replaced by a short static version when `prefers-reduced-motion` is set. It never shows in admin mode.
 
 ## 📁 Structure
 
 ```
 src/
 ├── app/
-│   ├── api/admin/{login,content}/route.ts   # admin auth + content API
+│   ├── api/admin/{login,content,upload}/route.ts  # admin auth + content + image upload API
 │   ├── layout.tsx                           # RTL, fonts, SEO, JSON-LD
 │   └── page.tsx                             # dynamic server render
 ├── components/
-│   ├── admin/admin-panel.tsx                # passcode gate + 5-tab editor
+│   ├── admin/admin-panel.tsx                # passcode gate + 5-tab editor + upload widget
 │   ├── site/                                # header, hero, about, quantum,
-│   │                                        # focus-areas, contact, footer…
-│   └── site/site-shell.tsx                  # public site ⇄ admin switcher
+│   │                                        # focus-areas, contact, footer, preloader…
+│   └── site/site-shell.tsx                  # public site ⇄ admin switcher + boot state
 └── lib/
     ├── site-content.ts                      # types + Persian defaults
     ├── site-content-server.ts               # Prisma read/write
@@ -92,7 +97,7 @@ src/
 ## 📦 Deployment Notes
 
 - Update the placeholder domain `https://parmidazinati.ir` in `src/app/layout.tsx`, `public/robots.txt` and `public/sitemap.xml` once the real domain is purchased.
-- Replace the placeholder portrait with a real photo at `public/images/portrait.webp` (or change the path from the admin panel).
+- Replace the placeholder portrait with a real photo at `public/images/portrait.png` (or change the path from the admin panel).
 - Set a strong `ADMIN_PASSCODE` in production.
 
 ---

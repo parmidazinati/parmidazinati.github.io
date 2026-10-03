@@ -23,7 +23,14 @@ const item: Variants = {
   },
 };
 
-export function Hero({ content }: { content: SiteContent["hero"] }) {
+export function Hero({
+  content,
+  booted = true,
+}: {
+  content: SiteContent["hero"];
+  /** start entrance animations only after the intro preloader is done */
+  booted?: boolean;
+}) {
   const reduce = useReducedMotion();
 
   /* decorative floating chips derive from the hero chip (splits on "·") */
@@ -48,7 +55,7 @@ export function Hero({ content }: { content: SiteContent["hero"] }) {
         <motion.div
           variants={reduce ? undefined : container}
           initial="hidden"
-          animate="show"
+          animate={booted ? "show" : "hidden"}
           className="flex flex-col items-start gap-7"
         >
           <motion.span
@@ -105,8 +112,16 @@ export function Hero({ content }: { content: SiteContent["hero"] }) {
         {/* ---------------------------- portrait column ---------------------------- */}
         <motion.div
           initial={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.94, y: 24 }}
-          animate={reduce ? { opacity: 1 } : { opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.25, ease: EASE }}
+          animate={
+            booted
+              ? reduce
+                ? { opacity: 1 }
+                : { opacity: 1, scale: 1, y: 0 }
+              : reduce
+                ? { opacity: 0 }
+                : { opacity: 0, scale: 0.94, y: 24 }
+          }
+          transition={{ duration: 1, delay: booted ? 0.25 : 0, ease: EASE }}
           className="relative mx-auto w-full max-w-[400px] sm:max-w-[440px]"
         >
           {/* orbit system around the portrait */}

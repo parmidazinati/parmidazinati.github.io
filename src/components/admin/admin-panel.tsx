@@ -14,6 +14,7 @@ import {
   Eye,
   EyeOff,
   Home,
+  ImagePlus,
   LayoutGrid,
   Loader2,
   LockKeyhole,
@@ -116,6 +117,133 @@ function ImagePreview({ src, alt }: { src: string; alt: string }) {
           className="object-cover"
         />
       ) : null}
+    </div>
+  );
+}
+
+/**
+ * Image chooser with direct upload: pick a file (or drag & drop), it is
+ * uploaded to /api/admin/upload and the returned public path fills the
+ * hidden path input. The path can still be typed manually.
+ */
+function ImageUploadField({
+  id,
+  label,
+  hint,
+  passcode,
+  value,
+  alt,
+  onChange,
+}: {
+  id: string;
+  label: string;
+  hint?: string;
+  passcode: string;
+  value: string;
+  alt: string;
+  onChange: (path: string) => void;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [dragging, setDragging] = useState(false);
+
+  const upload = async (file: File) => {
+    setUploading(true);
+    setUploadError(null);
+    try {
+      const body = new FormData();
+      body.append("file", file);
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        headers: { "x-admin-passcode": passcode },
+        body,
+      });
+      const data = await res.json();
+      if (res.ok && data.ok && typeof data.path === "string") {
+        onChange(data.path);
+      } else {
+        setUploadError(data.error ?? "آپلود تصویر ناموفق بود.");
+      }
+    } catch {
+      setUploadError("خطا در ارتباط با سرور هنگام آپلود.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-2">
+      <span id={`${id}-label`} className="text-sm font-semibold text-ink">
+        {label}
+      </span>
+      <div className="flex items-start gap-4">
+        <ImagePreview src={value} alt={alt} />
+        <div className="flex flex-1 flex-col gap-2">
+          <button
+            type="button"
+            onClick={() => inputRef.current?.click()}
+            onDragOver={(event) => {
+              event.preventDefault();
+              setDragging(true);
+            }}
+            onDragLeave={() => setDragging(false)}
+            onDrop={(event) => {
+              event.preventDefault();
+              setDragging(false);
+              const file = event.dataTransfer.files?.[0];
+              if (file) void upload(file);
+            }}
+            disabled={uploading}
+            aria-labelledby={`${id}-label`}
+            aria-label={`${label} — انتخاب فایل تصویر برای آپلود`}
+            className={`flex h-24 w-full flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed px-3 text-center transition-colors duration-300 disabled:opacity-60 ${
+              dragging
+                ? "border-aqua/60 bg-aqua/[0.08] text-ink"
+                : "border-white/15 bg-white/[0.03] text-fog hover:border-aqua/40 hover:text-ink"
+            }`}
+          >
+            {uploading ? (
+              <Loader2 size={18} className="animate-spin text-aqua" aria-hidden="true" />
+            ) : (
+              <ImagePlus size={18} className="text-aqua" aria-hidden="true" />
+            )}
+            <span className="text-[13px] font-semibold">
+              {uploading ? "در حال آپلود…" : "انتخاب عکس یا کشیدن و رها کردن"}
+            </span>
+            <span className="text-[11px] text-fog/60">
+              PNG · JPG · WebP — حداکثر ۵ مگابایت
+            </span>
+          </button>
+          <Input
+            aria-label={`${label} — مسیر فایل (دستی)`}
+            dir="ltr"
+            value={value}
+            onChange={(event) => onChange(event.target.value)}
+            className="border-white/10 bg-white/[0.04] font-mono text-xs text-ink focus-visible:ring-aqua/40"
+            placeholder="/images/... یا /uploads/..."
+          />
+        </div>
+      </div>
+      {hint && <p className="text-xs leading-5 text-fog/70">{hint}</p>}
+      {uploadError && (
+        <p role="alert" className="text-xs leading-5 text-red-300">
+          {uploadError}
+        </p>
+      )}
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/png,image/jpeg,image/webp"
+        className="sr-only"
+        tabIndex={-1}
+        aria-hidden="true"
+        onChange={(event) => {
+          const file = event.target.files?.[0];
+          if (file) void upload(file);
+          event.target.value = "";
+        }}
+      />
     </div>
   );
 }
@@ -565,29 +693,15 @@ export function AdminPanel({
 
             <div className="glass rounded-3xl p-6">
               <div className="flex flex-col gap-6">
-                <div className="flex items-end gap-4">
-                  <ImagePreview
-                    src={draft.hero.portraitImage}
-                    alt={draft.hero.portraitAlt}
-                  />
-                  <div className="flex-1">
-                    <Field
-                      id="hero-portrait"
-                      label="تصویر پرتره"
-                      hint="مسیر تصویر در پوشه public (مثال: /images/portrait.webp)"
-                    >
-                      <Input
-                        id="hero-portrait"
-                        dir="ltr"
-                        value={draft.hero.portraitImage}
-                        onChange={(event) =>
-                          updateHero({ portraitImage: event.target.value })
-                        }
-                        className="border-white/10 bg-white/[0.04] font-mono text-xs text-ink focus-visible:ring-aqua/40"
-                      />
-                    </Field>
-                  </div>
-                </div>
+                <ImageUploadField
+                  id="hero-portrait"
+                  label="تصویر پرتره (هدر)"
+                  hint="عکس خود را آپلود کنید یا مسیر فایل در پوشه public را دستی وارد کنید. پس از آپلود، حتماً «ذخیره تغییرات» را بزنید."
+                  passcode={passcode}
+                  value={draft.hero.portraitImage}
+                  alt={draft.hero.portraitAlt}
+                  onChange={(portraitImage) => updateHero({ portraitImage })}
+                />
 
                 <Field
                   id="hero-portrait-alt"
@@ -706,50 +820,33 @@ export function AdminPanel({
           {/* ------------------------------ focus ------------------------------ */}
           <TabsContent value="focus" className="mt-0 flex flex-col gap-6">
             <p className="rounded-2xl border border-aqua/20 bg-aqua/[0.06] px-4 py-3 text-xs leading-6 text-fog">
-              عنوان، توضیح و تصویر هر کارت را می‌توانید ویرایش کنید. مسیر تصویر
-              نسبت به پوشه public است (مثال: /images/focus-strategy.webp).
+              عنوان، توضیح و تصویر هر کارت را می‌توانید ویرایش کنید و عکس جدید
+              آپلود کنید. پس از هر تغییر، «ذخیره تغییرات» را بزنید.
             </p>
 
             {draft.focus.cards.map((card, index) => (
               <div key={index} className="glass rounded-3xl p-6">
-                <div className="flex items-start gap-4">
-                  <ImagePreview src={card.image} alt={card.alt} />
-                  <div className="flex flex-1 flex-col gap-4">
-                    <div className="grid gap-4 sm:grid-cols-2">
-                      <Field
+                <div className="flex flex-col gap-5">
+                  <ImageUploadField
+                    id={`card-${index}-image`}
+                    label={`تصویر کارت ${index + 1}`}
+                    passcode={passcode}
+                    value={card.image}
+                    alt={card.alt}
+                    onChange={(image) => updateCard(index, { image })}
+                  />
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <Field
+                      id={`card-${index}-title`}
+                      label={`عنوان کارت ${index + 1}`}
+                    >
+                      <Input
                         id={`card-${index}-title`}
-                        label={`عنوان کارت ${index + 1}`}
-                      >
-                        <Input
-                          id={`card-${index}-title`}
-                          value={card.title}
-                          onChange={(event) =>
-                            updateCard(index, { title: event.target.value })
-                          }
-                          className="border-white/10 bg-white/[0.04] text-ink focus-visible:ring-aqua/40"
-                        />
-                      </Field>
-                      <Field id={`card-${index}-image`} label="مسیر تصویر">
-                        <Input
-                          id={`card-${index}-image`}
-                          dir="ltr"
-                          value={card.image}
-                          onChange={(event) =>
-                            updateCard(index, { image: event.target.value })
-                          }
-                          className="border-white/10 bg-white/[0.04] font-mono text-xs text-ink focus-visible:ring-aqua/40"
-                        />
-                      </Field>
-                    </div>
-                    <Field id={`card-${index}-concept`} label="توضیح کوتاه">
-                      <Textarea
-                        id={`card-${index}-concept`}
-                        rows={2}
-                        value={card.concept}
+                        value={card.title}
                         onChange={(event) =>
-                          updateCard(index, { concept: event.target.value })
+                          updateCard(index, { title: event.target.value })
                         }
-                        className="resize-y border-white/10 bg-white/[0.04] text-sm leading-7 text-ink focus-visible:ring-aqua/40"
+                        className="border-white/10 bg-white/[0.04] text-ink focus-visible:ring-aqua/40"
                       />
                     </Field>
                     <Field
@@ -766,6 +863,17 @@ export function AdminPanel({
                       />
                     </Field>
                   </div>
+                  <Field id={`card-${index}-concept`} label="توضیح کوتاه">
+                    <Textarea
+                      id={`card-${index}-concept`}
+                      rows={2}
+                      value={card.concept}
+                      onChange={(event) =>
+                        updateCard(index, { concept: event.target.value })
+                      }
+                      className="resize-y border-white/10 bg-white/[0.04] text-sm leading-7 text-ink focus-visible:ring-aqua/40"
+                    />
+                  </Field>
                 </div>
               </div>
             ))}

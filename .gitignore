@@ -67,3 +67,6 @@ server.log
 Caddyfile
 worklog.md
 agent-ctx
+
+# agent tool scratch output
+/tool-results/

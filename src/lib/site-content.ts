@@ -58,7 +58,7 @@ export const DEFAULT_CONTENT: SiteContent = {
     headline: "ایده‌های بزرگ را به **تجربه‌های ماندگار** تبدیل می‌کنم.",
     intro:
       "من پارمیدا زینتی هستم؛ طراح UI/UX، فارغ‌التحصیل مهندسی کامپیوتر و بنیان‌گذار کوانتوم. اینجا جایی است که طراحی، فناوری و نگاه انسانی به یک مسیر مشترک می‌رسند.",
-    portraitImage: "/images/portrait.webp",
+    portraitImage: "/images/portrait.png",
     portraitAlt: "پرتره پارمیدا زینتی، طراح UI/UX و بنیان‌گذار Quantum",
   },
   about: {
@@ -99,26 +99,26 @@ export const DEFAULT_CONTENT: SiteContent = {
     cards: [
       {
         title: "استراتژی",
-        image: "/images/focus-strategy.webp",
+        image: "/images/focus-strategy.png",
         alt: "جلسه استراتژی و همکاری تیمی دور یک میز شیشه‌ای در دفتر مدرن",
         concept:
           "تفکر ساختاریافته و تصمیم‌گیری برای رشد محصولات و کسب‌وکارها",
       },
       {
         title: "آموزش",
-        image: "/images/focus-education.webp",
+        image: "/images/focus-education.png",
         alt: "یادگیری، تدریس و توسعه مهارت با ارائه روی صفحه‌نمایش در فضای کار مدرن",
         concept: "انتقال دانش و ایجاد مسیرهای یادگیری مؤثر",
       },
       {
         title: "هوش مصنوعی",
-        image: "/images/focus-ai.webp",
+        image: "/images/focus-ai.png",
         alt: "تجسم انتزاعی هوش مصنوعی؛ شبکه عصبی درخشان و جریان داده",
         concept: "استفاده از فناوری برای خلق ارزش و نوآوری",
       },
       {
         title: "ساخت دیجیتال",
-        image: "/images/focus-digital.webp",
+        image: "/images/focus-digital.png",
         alt: "کدنویسی و توسعه محصولات دیجیتال روی لپ‌تاپ با چند نمایشگر",
         concept: "تبدیل ایده‌ها به محصولات واقعی",
       },

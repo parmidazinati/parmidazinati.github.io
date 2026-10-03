@@ -1,9 +1,8 @@
 "use client";
 
-import { LockKeyhole } from "lucide-react";
 import { QuantumMark } from "./quantum-mark";
 
-export function Footer({ onManage }: { onManage?: () => void }) {
+export function Footer() {
   const year = new Date().getFullYear();
 
   return (
@@ -31,23 +30,6 @@ export function Footer({ onManage }: { onManage?: () => void }) {
           دارند.
         </p>
       </div>
-
-      {/* owner entry to the admin panel */}
-      {onManage && (
-        <div className="mx-auto w-full max-w-6xl px-4 pb-7 sm:px-6">
-          <div className="flex justify-center border-t border-white/[0.04] pt-5">
-            <button
-              type="button"
-              onClick={onManage}
-              className="btn-glass gap-2 px-5 py-2.5 text-[13px] text-fog transition-colors duration-300 hover:border-aqua/30 hover:text-ink"
-              aria-label="ورود به پنل مدیریت سایت"
-            >
-              <LockKeyhole size={14} aria-hidden="true" className="text-aqua" />
-              پنل مدیریت سایت
-            </button>
-          </div>
-        </div>
-      )}
     </footer>
   );
 }

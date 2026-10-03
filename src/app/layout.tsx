@@ -29,7 +29,7 @@ const personJsonLd = {
     "طراح UI/UX، فارغ‌التحصیل مهندسی کامپیوتر و بنیان‌گذار Quantum",
   "email": "mailto:parmida.zinati8932@gmail.com",
   "url": SITE_URL,
-  "image": `${SITE_URL}/images/portrait.webp`,
+  "image": `${SITE_URL}/images/portrait.png`,
   "address": {
     "@type": "PostalAddress",
     "addressLocality": "Qaemshahr",
@@ -88,7 +88,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/images/portrait.webp",
+        url: "/images/portrait.png",
         width: 768,
         height: 1344,
         alt: "پرتره پارمیدا زینتی، طراح UI/UX و بنیان‌گذار Quantum",
@@ -100,7 +100,7 @@ export const metadata: Metadata = {
     title: "پارمیدا زینتی | طراح UI/UX و بنیان‌گذار Quantum",
     description:
       "ایده‌های بزرگ را به تجربه‌های ماندگار تبدیل می‌کنم. طراح UI/UX و بنیان‌گذار Quantum.",
-    images: ["/images/portrait.webp"],
+    images: ["/images/portrait.png"],
   },
   robots: {
     index: true,
