@@ -35,8 +35,8 @@ export function Site({
         <About content={content.about} heading={content.sections.about} />
         <QuantumSection content={content.quantum} />
         <FocusAreas content={content.focus} heading={content.sections.focus} />
-        <Contact content={content.contact} heading={content.sections.contact} />
         <FeedbackSection />
+        <Contact content={content.contact} heading={content.sections.contact} />
       </main>
 
       <Footer />

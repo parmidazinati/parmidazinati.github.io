@@ -11,6 +11,7 @@ const NAV_ITEMS = [
   { href: "#about", id: "about", label: "درباره من" },
   { href: "#quantum", id: "quantum", label: "کوانتوم" },
   { href: "#focus", id: "focus", label: "حوزه‌های تمرکز" },
+  { href: "#feedback", id: "feedback", label: "نظرات" },
   { href: "#contact", id: "contact", label: "ارتباط با من" },
 ] as const;
 

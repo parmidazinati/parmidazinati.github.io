@@ -78,7 +78,7 @@ export function FeedbackSection() {
     <section
       id="feedback"
       aria-labelledby="feedback-title"
-      className="relative pb-24 pt-4 sm:pb-28"
+      className="relative py-24 sm:py-28"
     >
       <div className="mx-auto w-full max-w-3xl px-4 sm:px-6">
         <Reveal>
