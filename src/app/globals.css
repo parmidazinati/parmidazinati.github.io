@@ -66,6 +66,7 @@
   --animate-float-late: float 9s ease-in-out 1.4s infinite;
   --animate-pulse-soft: pulse-soft 3.4s ease-in-out infinite;
   --animate-sheen: sheen 10s ease-in-out infinite;
+  --animate-loading-dots: loading-dots 1.2s ease-in-out infinite;
 
   @keyframes orbit {
     from {
@@ -109,6 +110,16 @@
     42%,
     58% {
       transform: translateX(220%) rotate(14deg);
+    }
+  }
+  @keyframes loading-dots {
+    0%,
+    60%,
+    100% {
+      opacity: 0.15;
+    }
+    30% {
+      opacity: 1;
     }
   }
 }

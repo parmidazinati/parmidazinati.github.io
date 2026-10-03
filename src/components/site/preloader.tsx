@@ -5,10 +5,12 @@ import { motion, useReducedMotion } from "framer-motion";
 import { SkipForward } from "lucide-react";
 
 /**
- * Cinematic boot screen: a single terminal box that literally FILLS UP with
- * code — lines type in one by one while a soft glow rises inside the box.
- * When the box is full, the site appears. Skippable (button / Escape) and
- * honors prefers-reduced-motion with a short static version.
+ * Game-style boot screen — the way classic PC games open:
+ * the big title «پارمیدا زینتی» at the top, "loading..." two lines below it,
+ * and then the loading box that literally FILLS UP with code — lines type in
+ * one by one while a soft glow rises inside it, with a console-style progress
+ * line along the bottom edge. When the box is full, the site appears.
+ * Skippable (button / Escape) and honors prefers-reduced-motion.
  */
 
 type CodeLine = { text: string; className?: string };
@@ -125,89 +127,151 @@ export function Preloader({ onDone }: { onDone: () => void }) {
       initial={{ opacity: 1 }}
       exit={{ opacity: 0, y: -70, filter: "blur(10px)" }}
       transition={{ duration: 0.7, ease: [0.21, 0.47, 0.32, 0.98] }}
-      className="fixed inset-0 z-[90] flex flex-col items-center justify-center overflow-hidden bg-[#050a14] px-4"
+      className="fixed inset-0 z-[90] overflow-y-auto bg-[#050a14]"
     >
       {/* backdrop: dotted grid + brand glows */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+      <div aria-hidden="true" className="pointer-events-none fixed inset-0">
         <div className="absolute inset-0 opacity-[0.12] [background-image:radial-gradient(circle_at_1px_1px,rgba(148,163,184,0.55)_1px,transparent_0)] [background-size:26px_26px]" />
         <div className="absolute -top-28 start-[18%] h-80 w-80 rounded-full bg-aqua/[0.09] blur-[120px]" />
         <div className="absolute -bottom-24 end-[18%] h-80 w-80 rounded-full bg-lagoon/[0.09] blur-[120px]" />
       </div>
 
-      {/* ----------------------- the filling terminal box ----------------------- */}
-      <motion.div
-        initial={{ opacity: 0, y: 18, scale: 0.97 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        className={`glass relative z-10 w-full max-w-xl overflow-hidden rounded-2xl shadow-[0_40px_90px_-30px_rgba(2,8,20,0.95)] transition-shadow duration-500 ${
-          full ? "ring-1 ring-aqua/40" : ""
-        }`}
+      {/* console-style progress line pinned to the bottom edge */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-x-0 bottom-0 z-20 h-[3px] bg-white/[0.05]"
       >
-        {/* title bar — dots, label and live fill percentage */}
-        <div className="flex items-center gap-2 border-b border-white/[0.07] bg-white/[0.03] px-4 py-2.5">
-          <span aria-hidden="true" className="h-2.5 w-2.5 rounded-full bg-red-400/70" />
-          <span aria-hidden="true" className="h-2.5 w-2.5 rounded-full bg-amber-300/70" />
-          <span aria-hidden="true" className="h-2.5 w-2.5 rounded-full bg-lagoon/70" />
-          <span className="ms-3 font-mono text-[11px] text-fog" dir="ltr">
-            quantum — zsh
-          </span>
-          <span
-            className="ms-auto font-mono text-[11px] tabular-nums text-aqua"
-            dir="ltr"
-          >
-            {percent}%
-          </span>
-        </div>
-
-        {/* code area — fixed height so the box visibly FILLS from empty */}
         <div
-          dir="ltr"
-          className="relative h-[15.5rem] px-4 py-4 font-mono text-[12.5px] leading-6 sm:text-[13px]"
-          aria-hidden="true"
-        >
-          {/* rising glow = how full the box is */}
-          <div
-            className="absolute inset-x-0 bottom-0 bg-linear-to-t from-aqua/[0.12] via-aqua/[0.05] to-transparent shadow-[0_-1px_0_0_rgba(34,211,238,0.35)] transition-[height] duration-100 ease-linear"
-            style={{ height: `${percent}%` }}
-          />
+          className="h-full bg-linear-to-r from-aqua via-electric to-lagoon shadow-[0_0_18px_2px_rgba(34,211,238,0.45)] transition-[width] duration-100 ease-linear"
+          style={{ width: `${percent}%` }}
+        />
+      </div>
 
-          {/* the code being written */}
-          <div className="relative">
-            {visible.map(
-              (line, index) =>
-                line && (
-                  <p
-                    key={index}
-                    className={`whitespace-pre-wrap ${line.className ?? "text-fog"}`}
-                  >
-                    {line.text}
-                    {index === lastVisibleIndex && !full && (
-                      <span className="ms-0.5 inline-block h-3.5 w-2 translate-y-0.5 animate-pulse bg-aqua/80" />
-                    )}
+      <div className="flex min-h-full w-full flex-col items-center px-4 py-10">
+        <div className="m-auto flex w-full max-w-xl flex-col items-center">
+          {/* --------------------------- game title --------------------------- */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, ease: "easeOut" }}
+            className="relative text-center"
+          >
+            {/* soft glow behind the name */}
+            <div
+              aria-hidden="true"
+              className="absolute start-1/2 top-1/2 -z-10 h-28 w-80 max-w-full -translate-x-1/2 -translate-y-1/2 rounded-full bg-aqua/[0.13] blur-[75px]"
+            />
+            <h1 className="text-5xl font-black leading-[1.2] text-ink sm:text-6xl">
+              پارمیدا <span className="text-gradient">زینتی</span>
+            </h1>
+          </motion.div>
+
+          {/* ---------------- loading... — two lines below the title ---------------- */}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.18 }}
+            dir="ltr"
+            aria-hidden="true"
+            className="mt-7 font-mono text-sm font-medium tracking-[0.5em] text-fog sm:mt-8 sm:text-base"
+          >
+            loading
+            <span className="text-aqua">
+              <span className="animate-loading-dots">.</span>
+              <span className="animate-loading-dots [animation-delay:-0.8s]">
+                .
+              </span>
+              <span className="animate-loading-dots [animation-delay:-0.4s]">
+                .
+              </span>
+            </span>
+          </motion.p>
+
+          {/* ----------------------- the filling box ----------------------- */}
+          <motion.div
+            initial={{ opacity: 0, y: 18, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
+            className={`glass relative z-10 mt-8 w-full overflow-hidden rounded-2xl shadow-[0_40px_90px_-30px_rgba(2,8,20,0.95)] transition-shadow duration-500 ${
+              full ? "ring-1 ring-aqua/40" : ""
+            }`}
+          >
+            {/* title bar — dots, label and live fill percentage */}
+            <div className="flex items-center gap-2 border-b border-white/[0.07] bg-white/[0.03] px-4 py-2.5">
+              <span
+                aria-hidden="true"
+                className="h-2.5 w-2.5 rounded-full bg-red-400/70"
+              />
+              <span
+                aria-hidden="true"
+                className="h-2.5 w-2.5 rounded-full bg-amber-300/70"
+              />
+              <span
+                aria-hidden="true"
+                className="h-2.5 w-2.5 rounded-full bg-lagoon/70"
+              />
+              <span className="ms-3 font-mono text-[11px] text-fog" dir="ltr">
+                quantum — zsh
+              </span>
+              <span
+                className="ms-auto font-mono text-[11px] tabular-nums text-aqua"
+                dir="ltr"
+              >
+                {percent}%
+              </span>
+            </div>
+
+            {/* code area — fixed height so the box visibly FILLS from empty */}
+            <div
+              dir="ltr"
+              className="relative h-[15.5rem] px-4 py-4 font-mono text-[12.5px] leading-6 sm:text-[13px]"
+              aria-hidden="true"
+            >
+              {/* rising glow = how full the box is */}
+              <div
+                className="absolute inset-x-0 bottom-0 bg-linear-to-t from-aqua/[0.12] via-aqua/[0.05] to-transparent shadow-[0_-1px_0_0_rgba(34,211,238,0.35)] transition-[height] duration-100 ease-linear"
+                style={{ height: `${percent}%` }}
+              />
+
+              {/* the code being written */}
+              <div className="relative">
+                {visible.map(
+                  (line, index) =>
+                    line && (
+                      <p
+                        key={index}
+                        className={`whitespace-pre-wrap ${line.className ?? "text-fog"}`}
+                      >
+                        {line.text}
+                        {index === lastVisibleIndex && !full && (
+                          <span className="ms-0.5 inline-block h-3.5 w-2 translate-y-0.5 animate-pulse bg-aqua/80" />
+                        )}
+                      </p>
+                    ),
+                )}
+                {full && (
+                  <p className="text-lagoon">
+                    <span className="inline-block h-3.5 w-2 translate-y-0.5 animate-pulse bg-lagoon/80" />
                   </p>
-                ),
-            )}
-            {full && (
-              <p className="text-lagoon">
-                <span className="inline-block h-3.5 w-2 translate-y-0.5 animate-pulse bg-lagoon/80" />
-              </p>
-            )}
-          </div>
-        </div>
-      </motion.div>
+                )}
+              </div>
+            </div>
+          </motion.div>
 
-      {/* skip */}
-      <button
-        type="button"
-        onClick={finish}
-        className="relative z-10 mt-7 flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs text-fog/80 transition-colors hover:text-ink focus-visible:outline focus-visible:outline-1 focus-visible:outline-aqua/60"
-      >
-        <SkipForward size={13} aria-hidden="true" />
-        رد شدن
-        <kbd className="hidden rounded-md border border-white/10 bg-white/[0.05] px-1.5 py-0.5 font-mono text-[10px] sm:inline">
-          Esc
-        </kbd>
-      </button>
+          {/* skip */}
+          <button
+            type="button"
+            onClick={finish}
+            className="relative z-10 mt-7 flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs text-fog/80 transition-colors hover:text-ink focus-visible:outline focus-visible:outline-1 focus-visible:outline-aqua/60"
+          >
+            <SkipForward size={13} aria-hidden="true" />
+            رد شدن
+            <kbd className="hidden rounded-md border border-white/10 bg-white/[0.05] px-1.5 py-0.5 font-mono text-[10px] sm:inline">
+              Esc
+            </kbd>
+          </button>
+        </div>
+      </div>
 
       <span aria-live="polite" className="sr-only">
         سایت در حال بارگذاری است.
