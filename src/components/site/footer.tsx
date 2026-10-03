@@ -23,12 +23,6 @@ export function Footer() {
         <p className="text-[13px] text-fog">
           © {year} پارمیدا زینتی · تمامی حقوق محفوظ است.
         </p>
-
-        {/* image credit */}
-        <p className="max-w-xs text-[12px] leading-6 text-fog/80">
-          تصاویر استفاده‌شده در این وب‌سایت استوک/تولیدی و صرفاً جنبه نمایشی
-          دارند.
-        </p>
       </div>
     </footer>
   );

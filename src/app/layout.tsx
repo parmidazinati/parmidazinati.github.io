@@ -126,7 +126,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fa" dir="rtl" className={`${vazirmatn.variable} ${geistMono.variable}`}>
+    <html
+      lang="fa"
+      dir="rtl"
+      data-scroll-behavior="smooth"
+      className={`${vazirmatn.variable} ${geistMono.variable}`}
+    >
       <body className="bg-background text-foreground antialiased">
         {children}
         <script

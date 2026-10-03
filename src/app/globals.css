@@ -67,6 +67,11 @@
   --animate-pulse-soft: pulse-soft 3.4s ease-in-out infinite;
   --animate-sheen: sheen 10s ease-in-out infinite;
   --animate-loading-dots: loading-dots 1.2s ease-in-out infinite;
+  --animate-particle: particle 14s ease-in-out infinite;
+  --animate-scanline: scanline 7.5s linear infinite;
+  --animate-stream: stream 18s linear infinite;
+  --animate-stream-rev: stream-rev 9s linear infinite;
+  --animate-bar-sheen: bar-sheen 2.4s ease-in-out infinite;
 
   @keyframes orbit {
     from {
@@ -120,6 +125,47 @@
     }
     30% {
       opacity: 1;
+    }
+  }
+  @keyframes particle {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0);
+    }
+    50% {
+      transform: translate3d(0, -46px, 0);
+    }
+  }
+  @keyframes scanline {
+    from {
+      transform: translateY(-10vh);
+    }
+    to {
+      transform: translateY(110vh);
+    }
+  }
+  @keyframes stream {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @keyframes stream-rev {
+    from {
+      transform: translateX(-50%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+  @keyframes bar-sheen {
+    from {
+      left: -18%;
+    }
+    to {
+      left: 118%;
     }
   }
 }
