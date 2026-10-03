@@ -15,6 +15,10 @@ type Status = "idle" | "sending" | "sent" | "error";
 
 const MAX_MESSAGE = 1500;
 
+/* static export (GitHub Pages) — no backend, feedback goes through email instead */
+const STATIC = process.env.NEXT_PUBLIC_STATIC_EXPORT === "1";
+const CONTACT_EMAIL = "parmida.zinati8932@gmail.com";
+
 export function FeedbackSection() {
   const [name, setName] = useState("");
   const [contact, setContact] = useState("");
@@ -38,6 +42,17 @@ export function FeedbackSection() {
     if (message.trim().length < 3) {
       setStatus("error");
       setError("لطفاً متن پیام را وارد کنید.");
+      return;
+    }
+
+    /* static build — hand the message to the visitor's email client */
+    if (STATIC) {
+      const subject = encodeURIComponent("بازخورد سایت پارمیدا زینتی");
+      const body = encodeURIComponent(
+        `نام: ${name || "—"}\nراه ارتباطی: ${contact || "—"}\n\n${message}`
+      );
+      window.location.href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
+      setStatus("sent");
       return;
     }
 
@@ -126,9 +141,22 @@ export function FeedbackSection() {
                   <span className="flex h-14 w-14 items-center justify-center rounded-full border border-lagoon/30 bg-lagoon/10">
                     <CheckCircle2 size={26} aria-hidden="true" className="text-lagoon" />
                   </span>
-                  <p className="text-lg font-bold text-ink">پیام شما ثبت شد</p>
+                  <p className="text-lg font-bold text-ink">
+                    {STATIC ? "برنامه‌ی ایمیل شما باز شد" : "پیام شما ثبت شد"}
+                  </p>
                   <p className="max-w-sm text-sm leading-7 text-fog">
-                    سپاسگزارم که وقت گذاشتید؛ به‌زودی پیام‌تان را می‌خوانم.
+                    {STATIC ? (
+                      <>
+                        پیام‌تان آماده‌ی ارسال است — فقط دکمه‌ی ارسال را بزنید. اگر برنامه‌ی
+                        ایمیل باز نشد، می‌توانید مستقیم به{" "}
+                        <span dir="ltr" className="font-mono text-[13px] text-aqua">
+                          {CONTACT_EMAIL}
+                        </span>{" "}
+                        پیام بدهید.
+                      </>
+                    ) : (
+                      "سپاسگزارم که وقت گذاشتید؛ به‌زودی پیام‌تان را می‌خوانم."
+                    )}
                   </p>
                 </div>
               ) : (
@@ -233,7 +261,7 @@ export function FeedbackSection() {
                       ) : (
                         <>
                           <Send size={16} aria-hidden="true" />
-                          ارسال نظر
+                          {STATIC ? "ارسال با ایمیل" : "ارسال نظر"}
                         </>
                       )}
                     </button>

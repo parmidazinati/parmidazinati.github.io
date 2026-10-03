@@ -20,6 +20,9 @@ const SECTION_IDS = NAV_ITEMS.map((item) => item.id);
 /* sessionStorage flag — one counted visit per browser session */
 const VISIT_FLAG = "pz-visit-counted";
 
+/* static export (GitHub Pages) has no API — the counter stays hidden there */
+const STATIC = process.env.NEXT_PUBLIC_STATIC_EXPORT === "1";
+
 /** Persian digit formatting for the counter (fallback: plain number). */
 function faNumber(value: number): string {
   try {
@@ -63,6 +66,7 @@ export function Header() {
 
   /* visitor counter — POST once per browser session, then read-only */
   useEffect(() => {
+    if (STATIC) return;
     let cancelled = false;
     (async () => {
       try {
@@ -188,17 +192,19 @@ export function Header() {
           </ul>
         </nav>
 
-        {/* desktop visitor counter chip */}
-        <span
-          title="تعداد بازدید سایت"
-          className="hidden items-center gap-2 rounded-full border border-white/[0.1] bg-white/[0.05] px-3.5 py-2 text-[13px] text-fog backdrop-blur-xl lg:inline-flex"
-        >
-          <Eye size={14} aria-hidden="true" className="text-aqua" />
-          <span className="font-mono font-semibold tabular-nums text-ink">
-            {visitLabel}
+        {/* desktop visitor counter chip (hidden in the static export) */}
+        {!STATIC && (
+          <span
+            title="تعداد بازدید سایت"
+            className="hidden items-center gap-2 rounded-full border border-white/[0.1] bg-white/[0.05] px-3.5 py-2 text-[13px] text-fog backdrop-blur-xl lg:inline-flex"
+          >
+            <Eye size={14} aria-hidden="true" className="text-aqua" />
+            <span className="font-mono font-semibold tabular-nums text-ink">
+              {visitLabel}
+            </span>
+            <span className="sr-only">بازدیدکننده</span>
           </span>
-          <span className="sr-only">بازدیدکننده</span>
-        </span>
+        )}
 
         {/* mobile menu trigger */}
         <button
@@ -303,7 +309,8 @@ export function Header() {
                   </motion.li>
                 ))}
 
-                {/* visitor counter item — the final stair */}
+                {/* visitor counter item — the final stair (hidden in the static export) */}
+                {!STATIC && (
                 <motion.li
                   initial={reduce ? undefined : { opacity: 0, x: 30, y: -8 }}
                   animate={reduce ? undefined : { opacity: 1, x: 0, y: 0 }}
@@ -336,6 +343,7 @@ export function Header() {
                     </span>
                   </div>
                 </motion.li>
+                )}
               </ul>
             </nav>
           </motion.div>
