@@ -32,18 +32,18 @@ export function Footer({ onManage }: { onManage?: () => void }) {
         </p>
       </div>
 
-      {/* discreet owner-only entry to the admin panel */}
+      {/* owner entry to the admin panel */}
       {onManage && (
         <div className="mx-auto w-full max-w-6xl px-4 pb-7 sm:px-6">
-          <div className="flex justify-center border-t border-white/[0.04] pt-4">
+          <div className="flex justify-center border-t border-white/[0.04] pt-5">
             <button
               type="button"
               onClick={onManage}
-              className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[11px] font-medium text-fog/50 transition-colors duration-300 hover:bg-white/[0.04] hover:text-aqua focus-visible:outline focus-visible:outline-1 focus-visible:outline-aqua/60"
+              className="btn-glass gap-2 px-5 py-2.5 text-[13px] text-fog transition-colors duration-300 hover:border-aqua/30 hover:text-ink"
               aria-label="ورود به پنل مدیریت سایت"
             >
-              <LockKeyhole size={12} aria-hidden="true" />
-              مدیریت سایت
+              <LockKeyhole size={14} aria-hidden="true" className="text-aqua" />
+              پنل مدیریت سایت
             </button>
           </div>
         </div>

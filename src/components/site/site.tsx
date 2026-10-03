@@ -1,3 +1,4 @@
+import { LockKeyhole } from "lucide-react";
 import { Ambient } from "./ambient";
 import { Header } from "./header";
 import { Hero } from "./hero";
@@ -27,6 +28,19 @@ export function Site({
 
       <Ambient />
       <Header />
+
+      {/* floating admin entry — always reachable without scrolling */}
+      {onOpenAdmin && (
+        <button
+          type="button"
+          onClick={onOpenAdmin}
+          aria-label="ورود به پنل مدیریت سایت"
+          className="glass fixed bottom-4 start-4 z-40 flex h-11 items-center gap-2 rounded-2xl px-4 text-[13px] font-semibold text-fog opacity-85 shadow-[0_14px_40px_-14px_rgba(2,8,20,0.85)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 hover:border-aqua/30 hover:opacity-100 hover:text-ink hover:shadow-[0_18px_50px_-14px_rgba(34,211,238,0.35)] focus-visible:outline focus-visible:outline-1 focus-visible:outline-aqua/60"
+        >
+          <LockKeyhole size={14} className="text-aqua" aria-hidden="true" />
+          پنل مدیریت
+        </button>
+      )}
 
       <main id="main" className="flex-1">
         <Hero content={content.hero} />

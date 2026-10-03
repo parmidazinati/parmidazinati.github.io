@@ -52,10 +52,11 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## 🔐 Admin Panel (مدیریت محتوا)
 
-Two ways to open the content manager:
+Ways to open the content manager:
 
-1. **Footer button** — the discreet «مدیریت سایت» button at the bottom of the page
-2. **Direct link** — `http://localhost:3000/?admin=1`
+1. **Floating button** — the «پنل مدیریت» glass button, pinned to the corner of every page
+2. **Footer button** — «پنل مدیریت سایت» at the bottom of the page
+3. **Direct link** — `http://localhost:3000/?admin=1`
 
 The passcode is read from the `ADMIN_PASSCODE` variable in `.env` (server-side only; change it before deploying).
 
