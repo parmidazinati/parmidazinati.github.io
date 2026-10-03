@@ -1,0 +1,272 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* Quantum design system — v2 (cache-bust) */
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  /* ---------- shadcn token mapping ---------- */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  /* ---------- typography ---------- */
+  --font-sans: var(--font-vazir), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  /* ---------- Quantum brand palette ---------- */
+  --color-night: #050a14; /* deep navy / midnight base */
+  --color-night-soft: #0a1120; /* raised navy */
+  --color-panel: #0c1526; /* panel base */
+  --color-ink: #e8eef8; /* primary text */
+  --color-fog: #94a6c0; /* muted text */
+  --color-aqua: #22d3ee; /* electric cyan */
+  --color-lagoon: #2dd4bf; /* teal */
+  --color-electric: #38bdf8; /* electric blue */
+  --color-iris: #a78bfa; /* soft purple (sparing) */
+
+  /* ---------- motion tokens ---------- */
+  --animate-orbit: orbit 26s linear infinite;
+  --animate-orbit-rev: orbit-rev 38s linear infinite;
+  --animate-orbit-slow: orbit 60s linear infinite;
+  --animate-float: float 7s ease-in-out infinite;
+  --animate-float-late: float 9s ease-in-out 1.4s infinite;
+  --animate-pulse-soft: pulse-soft 3.4s ease-in-out infinite;
+  --animate-sheen: sheen 10s ease-in-out infinite;
+
+  @keyframes orbit {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes orbit-rev {
+    from {
+      transform: rotate(360deg);
+    }
+    to {
+      transform: rotate(0deg);
+    }
+  }
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+  @keyframes pulse-soft {
+    0%,
+    100% {
+      opacity: 0.4;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+  @keyframes sheen {
+    0%,
+    100% {
+      transform: translateX(-220%) rotate(14deg);
+    }
+    42%,
+    58% {
+      transform: translateX(220%) rotate(14deg);
+    }
+  }
+}
+
+/* ============================================================
+   Design tokens — Quantum dark palette (site is dark-first)
+   ============================================================ */
+:root {
+  --radius: 1rem;
+  --background: #050a14;
+  --foreground: #e8eef8;
+  --card: #0b1322;
+  --card-foreground: #e8eef8;
+  --popover: #0a1220;
+  --popover-foreground: #e8eef8;
+  --primary: #22d3ee;
+  --primary-foreground: #03121a;
+  --secondary: #101b2e;
+  --secondary-foreground: #dce7f5;
+  --muted: #101b2e;
+  --muted-foreground: #94a6c0;
+  --accent: #13233c;
+  --accent-foreground: #eaf6ff;
+  --destructive: #f87171;
+  --border: rgba(139, 170, 210, 0.14);
+  --input: rgba(139, 170, 210, 0.18);
+  --ring: #22d3ee;
+  --chart-1: #22d3ee;
+  --chart-2: #2dd4bf;
+  --chart-3: #38bdf8;
+  --chart-4: #a78bfa;
+  --chart-5: #7dd3fc;
+  --sidebar: #0a1120;
+  --sidebar-foreground: #e8eef8;
+  --sidebar-primary: #22d3ee;
+  --sidebar-primary-foreground: #03121a;
+  --sidebar-accent: #13233c;
+  --sidebar-accent-foreground: #eaf6ff;
+  --sidebar-border: rgba(139, 170, 210, 0.14);
+  --sidebar-ring: #22d3ee;
+}
+
+/* keep .dark aligned with the brand palette */
+.dark {
+  --background: #050a14;
+  --foreground: #e8eef8;
+  --card: #0b1322;
+  --card-foreground: #e8eef8;
+  --popover: #0a1220;
+  --popover-foreground: #e8eef8;
+  --primary: #22d3ee;
+  --primary-foreground: #03121a;
+  --secondary: #101b2e;
+  --secondary-foreground: #dce7f5;
+  --muted: #101b2e;
+  --muted-foreground: #94a6c0;
+  --accent: #13233c;
+  --accent-foreground: #eaf6ff;
+  --destructive: #f87171;
+  --border: rgba(139, 170, 210, 0.14);
+  --input: rgba(139, 170, 210, 0.18);
+  --ring: #22d3ee;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5.5rem;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection {
+    background: rgba(34, 211, 238, 0.28);
+    color: #f2fbff;
+  }
+  :focus-visible {
+    outline: 2px solid rgba(34, 211, 238, 0.75);
+    outline-offset: 3px;
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #070d19;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #155e75, #0f766e);
+    border-radius: 8px;
+    border: 2px solid #070d19;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #0e7490, #14b8a6);
+  }
+
+  /* Respect users who prefer reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* ---------- glassmorphism surfaces ---------- */
+  .glass {
+    @apply border border-white/[0.08] bg-white/[0.04] backdrop-blur-xl;
+  }
+  .glass-strong {
+    @apply border border-white/[0.1] bg-[#0a1220]/75 backdrop-blur-2xl;
+  }
+  .glass-chip {
+    @apply inline-flex items-center gap-2 rounded-full border border-white/[0.1] bg-white/[0.05] px-4 py-1.5 text-sm text-ink backdrop-blur-xl;
+  }
+
+  /* gradient text (cyan → blue → teal) */
+  .text-gradient {
+    @apply bg-linear-to-l from-aqua via-electric to-lagoon bg-clip-text text-transparent;
+  }
+
+  /* ---------- buttons ---------- */
+  .btn-primary {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-linear-to-l from-aqua to-lagoon px-6 py-3 text-sm font-bold text-[#03121a] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_14px_44px_-8px_rgba(34,211,238,0.55)] focus-visible:outline-2 active:translate-y-0;
+  }
+  .btn-glass {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-white/[0.14] bg-white/[0.05] px-6 py-3 text-sm font-semibold text-ink backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 hover:border-white/[0.26] hover:bg-white/[0.09] focus-visible:outline-2 active:translate-y-0;
+  }
+
+  /* faint blueprint grid */
+  .bg-grid {
+    background-image:
+      linear-gradient(to left, rgba(148, 184, 226, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(148, 184, 226, 0.05) 1px, transparent 1px);
+    background-size: 56px 56px;
+  }
+
+  /* gradient hairline border frame for the portrait */
+  .glass-frame {
+    border: 1px solid transparent;
+    background:
+      linear-gradient(160deg, rgba(34, 211, 238, 0.55), rgba(167, 139, 250, 0.18) 42%, rgba(45, 212, 191, 0.4)) border-box,
+      linear-gradient(#0a1120, #0a1120) padding-box;
+  }
+
+  /* soft glow dot used on orbit rings */
+  .orbit-dot {
+    @apply absolute h-2 w-2 rounded-full bg-aqua shadow-[0_0_14px_4px_rgba(34,211,238,0.55)];
+  }
+}
