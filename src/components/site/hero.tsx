@@ -159,11 +159,11 @@ export function Hero({
               <Image
                 src={content.portraitImage}
                 alt={content.portraitAlt}
-                width={768}
-                height={1344}
+                width={576}
+                height={720}
                 priority
                 sizes="(max-width: 640px) 88vw, (max-width: 1024px) 440px, 400px"
-                className="h-full w-full object-cover object-[50%_18%]"
+                className="h-full w-full object-cover"
               />
               {/* cinematic bottom fade */}
               <div
