@@ -5,6 +5,7 @@ import { About } from "./about";
 import { QuantumSection } from "./quantum-section";
 import { FocusAreas } from "./focus-areas";
 import { Contact } from "./contact";
+import { FeedbackSection } from "./feedback";
 import { Footer } from "./footer";
 import type { SiteContent } from "@/lib/site-content";
 
@@ -35,6 +36,7 @@ export function Site({
         <QuantumSection content={content.quantum} />
         <FocusAreas content={content.focus} heading={content.sections.focus} />
         <Contact content={content.contact} heading={content.sections.contact} />
+        <FeedbackSection />
       </main>
 
       <Footer />

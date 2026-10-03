@@ -20,6 +20,7 @@ import {
   LockKeyhole,
   LogOut,
   Mail,
+  MessageSquareText,
   RotateCcw,
   Save,
   ShieldCheck,
@@ -37,6 +38,7 @@ import {
 } from "@/components/ui/tabs";
 import { Ambient } from "@/components/site/ambient";
 import { QuantumMark } from "@/components/site/quantum-mark";
+import { FeedbackTab } from "@/components/admin/feedback-tab";
 import {
   DEFAULT_CONTENT,
   parseLines,
@@ -278,6 +280,7 @@ export function AdminPanel({
 
   const [status, setStatus] = useState<Status>("idle");
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [unreadCount, setUnreadCount] = useState(0);
   const statusTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const exitToSite = useCallback(() => {
@@ -333,7 +336,8 @@ export function AdminPanel({
     };
   }, []);
 
-  /* after unlocking, pull the latest saved content from the server */
+  /* after unlocking, pull the latest saved content from the server
+     plus a lightweight feedback badge count */
   useEffect(() => {
     if (!authed) return;
     let cancelled = false;
@@ -347,11 +351,21 @@ export function AdminPanel({
       } catch {
         /* keep the initial content if the fetch fails */
       }
+      try {
+        const res = await fetch("/api/feedback?meta=1", {
+          cache: "no-store",
+          headers: { "x-admin-passcode": passcode },
+        });
+        const data = await res.json();
+        if (!cancelled && data?.ok) setUnreadCount(data.unread ?? 0);
+      } catch {
+        /* the feedback badge is non-critical */
+      }
     })();
     return () => {
       cancelled = true;
     };
-  }, [authed, applyContent]);
+  }, [authed, applyContent, passcode]);
 
   /* ------------------------------ actions ------------------------------ */
 
@@ -656,6 +670,18 @@ export function AdminPanel({
             >
               <Mail size={14} aria-hidden="true" />
               تماس
+            </TabsTrigger>
+            <TabsTrigger
+              value="feedback"
+              className="relative gap-1.5 rounded-xl px-3 py-2 text-xs data-[state=active]:bg-aqua data-[state=active]:text-[#03121a] sm:text-sm"
+            >
+              <MessageSquareText size={14} aria-hidden="true" />
+              نظرات
+              {unreadCount > 0 && (
+                <span className="absolute -top-1.5 -start-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-linear-to-l from-aqua to-lagoon px-1 font-mono text-[10px] font-bold text-[#03121a] shadow-[0_0_10px_2px_rgba(34,211,238,0.45)]">
+                  {new Intl.NumberFormat("fa-IR").format(unreadCount)}
+                </span>
+              )}
             </TabsTrigger>
           </TabsList>
 
@@ -1013,6 +1039,19 @@ export function AdminPanel({
                     className="resize-y border-white/10 bg-white/[0.04] text-sm leading-7 text-ink focus-visible:ring-aqua/40"
                   />
                 </Field>
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* ---------------------------- feedback ---------------------------- */}
+          <TabsContent value="feedback" className="mt-0 flex flex-col gap-4">
+            <div className="glass rounded-3xl p-6">
+              <p className="text-sm leading-7 text-fog">
+                پیام‌های ثبت‌شده در سکشن «نظرات و پیشنهادات» سایت — می‌توانید
+                آن‌ها را خوانده‌شده علامت‌بزنید یا حذف کنید.
+              </p>
+              <div className="mt-4">
+                <FeedbackTab passcode={passcode} onUnreadChange={setUnreadCount} />
               </div>
             </div>
           </TabsContent>

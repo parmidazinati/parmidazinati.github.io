@@ -16,3 +16,20 @@ model SiteSetting {
   value     String
   updatedAt DateTime @updatedAt
 }
+
+/// Visitor feedback & suggestions submitted from the public site.
+model Feedback {
+  id        String    @id @default(cuid())
+  name      String    @default("")
+  contact   String    @default("")
+  message   String
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+}
+
+/// Single-row global visitor counter (key is always "site").
+model VisitCounter {
+  key       String   @id @default("site")
+  count     Int      @default(0)
+  updatedAt DateTime @updatedAt
+}
